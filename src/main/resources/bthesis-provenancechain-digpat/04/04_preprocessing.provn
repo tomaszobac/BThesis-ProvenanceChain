@@ -1,0 +1,47 @@
+document
+  prefix ns_RDC <https://gitlab.ics.muni.cz/396340/bthesis-provenancechain-digpat/-/tree/master/04/>
+
+  bundle ns_RDC:04_preprocessing.provn
+    prefix ns_RDC <https://gitlab.ics.muni.cz/396340/bthesis-provenancechain-digpat/-/tree/master/04/>
+    prefix ns_pathology <pathology_uri>
+    prefix cpm <cpm_uri>
+    prefix dct <http://purl.org/dc/terms/>
+
+    entity(ns_pathology:WSIDataConnector_2, [prov:type="cpm:receiverConnector", cpm:senderBundleId="ns_pathology:XXXXXXXXXXXX", cpm:senderServiceUri="#URI#"])
+    entity(ns_RDC:trainDatasetConnector, [prov:type="cpm:senderConnector", cpm:receiverBundleId="ns_RDC:05_training.provn", cpm:receiverServiceUri="#URI#"])
+    entity(ns_RDC:testDatasetConnector, [prov:type="cpm:senderConnector", cpm:receiverBundleId="ns_RDC:06_evaluation.provn", cpm:receiverServiceUri="#URI#"])
+    agent(ns_RDC:pathologyDepartment, [prov:type="cpm:senderAgent", cpm:contactIdPid=""])
+    agent(ns_RDC:researchDataCenter, [prov:type="cpm:receiverAgent", cpm:contactIdPid=""])
+    activity(ns_RDC:receipt, -, -, [prov:type="cpm:receiptActivity"])
+    activity(ns_RDC:preprocessing, -, -, [prov:type="cpm:mainActivity", dct:hasPart="ns_RDC:tilesGeneration", dct:hasPart2="ns_RDC:datasetSplit"])
+    entity(ns_RDC:WSI_data, [prov:type="cpm:externalInputConnector", cpm:currentBundle="ns_RDC:04_preprocessing.provn"])
+    entity(ns_RDC:WSI_data-b, [cpm:externalId="wsi-id-1"])
+    entity(ns_RDC:tilesBatch1, [cpm:externalId="batch-id-1"])
+    entity(ns_RDC:trainDataset, [cpm:externalId="datasetId1"])
+    entity(ns_RDC:testDataset, [cpm:externalId="datasetId2"])
+    activity(ns_RDC:tilesGeneration, -, -)
+    activity(ns_RDC:datasetSplit, -, -)
+    wasGeneratedBy(ns_RDC:tilesBatch1, ns_RDC:tilesGeneration, -)
+    used(ns_RDC:tilesGeneration, ns_RDC:WSI_data-b, -)
+    wasDerivedFrom(ns_RDC:testDataset, ns_RDC:tilesBatch1, -, -, -)
+    wasDerivedFrom(ns_RDC:trainDataset, ns_RDC:tilesBatch1, -, -, -)
+    used(ns_RDC:datasetSplit, ns_RDC:tilesBatch1, -)
+    wasGeneratedBy(ns_RDC:trainDataset, ns_RDC:datasetSplit, -)
+    wasGeneratedBy(ns_RDC:testDataset, ns_RDC:datasetSplit, -)
+    wasGeneratedBy(ns_RDC:WSI_data, ns_RDC:receipt, -)
+    wasAttributedTo(ns_pathology:WSIDataConnector_2, ns_RDC:pathologyDepartment)
+    wasAttributedTo(ns_RDC:testDatasetConnector, ns_RDC:researchDataCenter)
+    wasAttributedTo(ns_RDC:trainDatasetConnector, ns_RDC:researchDataCenter)
+    wasDerivedFrom(ns_RDC:WSI_data, ns_pathology:WSIDataConnector_2, -, -, -)
+    used(ns_RDC:receipt, ns_pathology:WSIDataConnector_2, -)
+    wasInvalidatedBy(ns_pathology:WSIDataConnector_2, ns_RDC:receipt, -)
+    used(ns_RDC:preprocessing, ns_RDC:WSI_data, -)
+    wasDerivedFrom(ns_RDC:testDatasetConnector, ns_RDC:WSI_data, -, -, -)
+    wasGeneratedBy(ns_RDC:testDatasetConnector, ns_RDC:preprocessing, -)
+    wasDerivedFrom(ns_RDC:trainDatasetConnector, ns_RDC:WSI_data, -, -, -)
+    wasGeneratedBy(ns_RDC:trainDatasetConnector, ns_RDC:preprocessing, -)
+    specializationOf(ns_RDC:testDataset, ns_RDC:testDatasetConnector)
+    specializationOf(ns_RDC:trainDataset, ns_RDC:trainDatasetConnector)
+    specializationOf(ns_RDC:WSI_data-b, ns_RDC:WSI_data)
+  endBundle
+endDocument

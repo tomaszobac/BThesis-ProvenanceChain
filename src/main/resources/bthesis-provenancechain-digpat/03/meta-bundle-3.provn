@@ -1,0 +1,8 @@
+document
+  prefix ns_surgery <https://gitlab.ics.muni.cz/396340/bthesis-provenancechain-digpat/-/tree/master/03/>
+
+  entity(ns_surgery:abstract-03_biobanking.provn)
+  entity(ns_surgery:03_biobanking.provn, [prov:type="prov:bundle"])
+  specializationOf(ns_surgery:03_biobanking.provn, ns_surgery:abstract-03_biobanking.provn)
+
+endDocument

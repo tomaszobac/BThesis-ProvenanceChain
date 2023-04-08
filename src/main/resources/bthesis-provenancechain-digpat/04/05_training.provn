@@ -1,0 +1,46 @@
+document
+  prefix ns_RDC <https://gitlab.ics.muni.cz/396340/bthesis-provenancechain-digpat/-/tree/master/04/>
+
+  bundle ns_RDC:05_training.provn
+    prefix ns_RDC <https://gitlab.ics.muni.cz/396340/bthesis-provenancechain-digpat/-/tree/master/04/>
+    prefix cpm <cpm_uri>
+    prefix dct <http://purl.org/dc/terms/>
+
+    entity(ns_RDC:trainDatasetConnector, [prov:type="cpm:receiverConnector", cpm:senderBundleId="ns_RDC:04.provn", cpm:senderServiceUri="#URI#"])
+    agent(ns_RDC:researchDataCenter, [prov:type="cpm:senderAgent", cpm:contactIdPid=""])
+    entity(ns_RDC:trainDataset, [prov:type="cpm:externalInputConnector", cpm:currentBundle="ns_RDC:05_training.provn"])
+    activity(ns_RDC:receipt, -, -, [prov:type="cpm:receiptActivity"])
+    activity(ns_RDC:trainingMain, -, -, [dct:hasPart="ns_RDC:training", dct:hasPart2="ns_RDC:validation", prov:type="cpm:mainActivity"])
+    entity(ns_RDC:trainedModelConnector, [prov:type="cpm:senderConnector", cpm:receiverBundleId="ns_RDC:06_evaluation.provn", cpm:receiverServiceUri="#URI#"])
+    agent(ns_RDC:researchDataCenter, [prov:type="cpm:receiverAgent", cpm:contactIdPid=""])
+    wasAttributedTo(ns_RDC:trainDatasetConnector, ns_RDC:researchDataCenter)
+    wasAttributedTo(ns_RDC:trainedModelConnector, ns_RDC:researchDataCenter)
+    used(ns_RDC:receipt, ns_RDC:trainDatasetConnector, -)
+    wasGeneratedBy(ns_RDC:trainDataset, ns_RDC:receipt, -)
+    wasInvalidatedBy(ns_RDC:trainDatasetConnector, ns_RDC:receipt, -)
+    used(ns_RDC:trainingMain, ns_RDC:trainDataset, -)
+    wasGeneratedBy(ns_RDC:trainedModelConnector, ns_RDC:trainingMain, -)
+    wasDerivedFrom(ns_RDC:trainDataset, ns_RDC:trainDatasetConnector, -, -, -)
+    wasDerivedFrom(ns_RDC:trainedModelConnector, ns_RDC:trainDataset, -, -, -)
+    entity(ns_RDC:trainDataset-b)
+    entity(ns_RDC:validationDataset-b)
+    entity(ns_RDC:summaries)
+    entity(ns_RDC:untrainedModel)
+    entity(ns_RDC:trainedModel)
+    activity(ns_RDC:training, -, -)
+    activity(ns_RDC:validation, -, -)
+    specializationOf(ns_RDC:trainDataset-b, ns_RDC:trainDataset)
+    specializationOf(ns_RDC:validationDataset-b, ns_RDC:trainDataset)
+    specializationOf(ns_RDC:trainedModel, ns_RDC:trainedModelConnector)
+    wasDerivedFrom(ns_RDC:trainedModel, ns_RDC:untrainedModel, -, -, -)
+    wasDerivedFrom(ns_RDC:trainedModel, ns_RDC:trainDataset-b, -, -, -)
+    used(ns_RDC:training, ns_RDC:trainDataset-b, -)
+    used(ns_RDC:training, ns_RDC:untrainedModel, -)
+    wasGeneratedBy(ns_RDC:trainedModel, ns_RDC:training, -)
+    used(ns_RDC:validation, ns_RDC:validationDataset-b, -)
+    used(ns_RDC:validation, ns_RDC:trainedModel, -)
+    wasGeneratedBy(ns_RDC:summaries, ns_RDC:validation, -)
+    wasDerivedFrom(ns_RDC:summaries, ns_RDC:trainedModel, -, -, -)
+    wasDerivedFrom(ns_RDC:summaries, ns_RDC:validationDataset-b, -, -, -)
+  endBundle
+endDocument

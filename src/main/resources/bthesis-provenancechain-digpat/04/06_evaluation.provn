@@ -1,0 +1,42 @@
+document
+  prefix ns_RDC <https://gitlab.ics.muni.cz/396340/bthesis-provenancechain-digpat/-/tree/master/04/>
+
+  bundle ns_RDC:06_evaluation.provn
+    prefix ns_RDC <https://gitlab.ics.muni.cz/396340/bthesis-provenancechain-digpat/-/tree/master/04/>
+    prefix cpm <cpm_uri>
+    prefix dct <http://purl.org/dc/terms/>
+
+    entity(ns_RDC:trainedModelConnector, [prov:type="cpm:receiverConnector", cpm:senderBundleId="ns_RDC:05_training.provn", cpm:senderServiceUri="#URI#"])
+    entity(ns_RDC:testDatasetConnector, [prov:type="cpm:receiverConnector", cpm:senderBundleId="ns_RDC:04_preprocessing.provn", cpm:senderServiceUri="#URI#"])
+    entity(ns_RDC:trainedModel, [prov:type="cpm:externalInputConnector", cpm:currentBundle="ns_RDC:06_evaluation.provn"])
+    entity(ns_RDC:testDataset, [prov:type="cpm:externalInputConnector", cpm:currentBundle="ns_RDC:06_evaluation.provn"])
+    activity(ns_RDC:receipt1, -, -, [prov:type="cpm:receiptActivity"])
+    activity(ns_RDC:receipt2, -, -, [prov:type="cpm:receiptActivity"])
+    activity(ns_RDC:testingMain, -, -, [prov:type="cpm:mainActivity", dct:hasPart="ns_RDC:testRun", dct:hasPart2="ns_RDC:resultsCompare"])
+    agent(ns_RDC:researchDataCenter, [prov:type="cpm:senderAgent", cpm:contactIdPid=""])
+    agent(ns_RDC:researchDataCenter, [prov:type="cpm:senderAgent", cpm:contactIdPid=""])
+    wasDerivedFrom(ns_RDC:trainedModel, ns_RDC:trainedModelConnector, -, -, -)
+    wasInvalidatedBy(ns_RDC:trainedModelConnector, ns_RDC:receipt1, -)
+    wasGeneratedBy(ns_RDC:trainedModel, ns_RDC:receipt1, -)
+    used(ns_RDC:receipt1, ns_RDC:trainedModelConnector, -)
+    wasDerivedFrom(ns_RDC:testDataset, ns_RDC:testDatasetConnector, -, -, -)
+    wasGeneratedBy(ns_RDC:testDataset, ns_RDC:receipt2, -)
+    used(ns_RDC:receipt2, ns_RDC:testDatasetConnector, -)
+    wasInvalidatedBy(ns_RDC:testDatasetConnector, ns_RDC:receipt2, -)
+    used(ns_RDC:testingMain, ns_RDC:testDataset, -)
+    used(ns_RDC:testingMain, ns_RDC:trainedModel, -)
+    wasAttributedTo(ns_RDC:trainedModelConnector, ns_RDC:researchDataCenter)
+    wasAttributedTo(ns_RDC:testDatasetConnector, ns_RDC:researchDataCenter)
+    entity(ns_RDC:testRunResults)
+    entity(ns_RDC:trainedModel-b, [cpm:externalId="modelId1"])
+    entity(ns_RDC:testDataset-b, [cpm:externalId="datasetId2"])
+    activity(ns_RDC:testRun, -, -)
+    specializationOf(ns_RDC:trainedModel-b, ns_RDC:trainedModel)
+    specializationOf(ns_RDC:testDataset-b, ns_RDC:testDataset)
+    used(ns_RDC:testRun, ns_RDC:testDataset-b, -)
+    wasGeneratedBy(ns_RDC:testRunResults, ns_RDC:testRun, -)
+    wasDerivedFrom(ns_RDC:testRunResults, ns_RDC:trainedModel-b, -, -, -)
+    wasDerivedFrom(ns_RDC:testRunResults, ns_RDC:testDataset-b, -, -, -)
+    used(ns_RDC:testRun, ns_RDC:trainedModel-b, -)
+  endBundle
+endDocument

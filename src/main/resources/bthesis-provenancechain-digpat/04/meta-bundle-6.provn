@@ -1,0 +1,8 @@
+document
+  prefix ns_surgery <https://gitlab.ics.muni.cz/396340/bthesis-provenancechain-digpat/-/tree/master/04/>
+
+  entity(ns_surgery:abstract-06_evaluation.provn)
+  entity(ns_surgery:06_evaluation.provn, [prov:type="prov:bundle"])
+  specializationOf(ns_surgery:06_evaluation.provn, ns_surgery:abstract-06_evaluation.provn)
+
+endDocument
