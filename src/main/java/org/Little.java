@@ -73,7 +73,7 @@ public class Little {
     
     public void doConversions(Document document, String file) {
         InteropFramework intF=new InteropFramework();
-        intF.writeDocument(file, document);     
+        intF.writeDocument(file, document);
         intF.writeDocument(System.out, Formats.ProvFormat.PROVN, document);
     }
 
