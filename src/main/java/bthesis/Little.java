@@ -1,8 +1,7 @@
-package org;
+package bthesis;
 
 import java.util.Arrays;
 
-import org.openprovenance.prov.configuration.Configuration;
 import org.openprovenance.prov.interop.Formats;
 import org.openprovenance.prov.interop.InteropFramework;
 import org.openprovenance.prov.model.Agent;
@@ -11,7 +10,6 @@ import org.openprovenance.prov.model.Entity;
 import org.openprovenance.prov.model.Namespace;
 import org.openprovenance.prov.model.QualifiedName;
 import org.openprovenance.prov.model.ProvFactory;
-import org.openprovenance.prov.model.StatementOrBundle;
 import org.openprovenance.prov.model.WasAttributedTo;
 import org.openprovenance.prov.model.WasDerivedFrom;
 

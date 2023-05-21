@@ -1,4 +1,4 @@
-package org;
+package bthesis;
 
 import org.openprovenance.prov.interop.InteropFramework;
 import org.openprovenance.prov.model.Document;
