@@ -1,4 +1,4 @@
-package bthesis.metageneration;
+package bthesis;
 
 import org.antlr.runtime.RecognitionException;
 import org.openprovenance.prov.interop.InteropFramework;

@@ -1,9 +1,13 @@
 package bthesis.metageneration;
 
+import org.openprovenance.prov.model.Document;
+
+import java.io.IOException;
+import java.security.NoSuchAlgorithmException;
 import java.util.Scanner;
 
 public class AccessApp {
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException, NoSuchAlgorithmException {
         Scanner scanner = new Scanner(System.in);
 
         System.out.println("Please enter the input path:");
@@ -16,10 +20,10 @@ public class AccessApp {
 
         SystemFileLoader inputFileLoader = new SystemFileLoader(path1);
 
-        MetaGeneration generation = new MetaGeneration(inputFileLoader);
-        generation.generate();
+        MetaGeneration generation = new MetaGeneration(inputFileLoader.getFiles());
+        Document document = generation.generate();
 
-        WriteDocument outputWriter = new WriteDocument(path2, generation.getMetadocument());
+        WriteDocument outputWriter = new WriteDocument(path2, document);
 
     }
 }

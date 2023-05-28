@@ -1,24 +1,37 @@
 package bthesis.metageneration;
 
+import org.openprovenance.prov.interop.InteropFramework;
 import org.openprovenance.prov.model.Document;
 
+import java.io.IOException;
+import java.security.NoSuchAlgorithmException;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.io.File;
 
 public class MetaGeneration {
-    SystemFileLoader inputFileLoader;
-    Map<Document, String> documents;
-    Document metadocument;
+    List<TooManyDocuments> documents;
 
-    public MetaGeneration(SystemFileLoader inputFileLoader) {
-        this.inputFileLoader = inputFileLoader;
+    public MetaGeneration(List<File> files) {
+        setDocuments(files);
     }
 
-    public Document getMetadocument() {
-        return metadocument;
+    public void setDocuments(List<File> files) {
+        for (File file : files) {
+            this.documents.add(new TooManyDocuments(file));
+        }
     }
 
-    public void generate() {
+    public List<TooManyDocuments> getDocuments() {
+        return documents;
+    }
 
+    public Document generate() throws IOException, NoSuchAlgorithmException {
+        HashDocument hasher = new HashDocument();
+        hasher.addHashes(getDocuments());
+
+        return null;//metadocument;
     }
 
 }
