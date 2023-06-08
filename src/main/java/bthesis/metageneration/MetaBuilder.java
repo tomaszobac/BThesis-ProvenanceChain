@@ -4,11 +4,15 @@ import org.openprovenance.prov.interop.InteropFramework;
 import org.openprovenance.prov.model.Bundle;
 import org.openprovenance.prov.model.Document;
 import org.openprovenance.prov.model.Entity;
+import org.openprovenance.prov.model.Identifiable;
 import org.openprovenance.prov.model.Namespace;
 import org.openprovenance.prov.model.ProvFactory;
+import org.openprovenance.prov.model.StatementOrBundle;
 import org.openprovenance.prov.model.WasAttributedTo;
 import org.openprovenance.prov.model.WasDerivedFrom;
 
+import java.io.File;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -41,19 +45,31 @@ public class MetaBuilder {
     }
 
     public Document makeDocument(List<TooManyDocuments> resources) {
+        List<StatementOrBundle> statements = new ArrayList<>();
+        List<StatementOrBundle> specialization = new ArrayList<>();
+
+        Document document = pFactory.newDocument();
         Bundle bundle = (Bundle) resources.get(0).getDocument().getStatementOrBundle().get(0);
+
         setPrefix(bundle.getId().getPrefix());
         setNsuri(bundle.getId().getNamespaceURI());
 
-        Entity quote = pFactory.newEntity(namespace.qualifiedName(getPrefix(),"LittleSemanticsWeb.html",pFactory));
-        quote.setValue(pFactory.newValue("A little provenance goes a long way", pFactory.getName().XSD_STRING));
-        Entity original = pFactory.newEntity(namespace.qualifiedName(getPrefix(),"LittleSemanticsWeb.html",pFactory));
+        namespace.register(getPrefix(), getNsuri());
 
-        WasAttributedTo attr1 = pFactory.newWasAttributedTo(null,quote.getId(), original.getId());
-        WasDerivedFrom wdf = pFactory.newWasDerivedFrom(quote.getId(), original.getId());
+        Entity master = pFactory.newEntity(namespace.qualifiedName(getPrefix(),bundle.getId().getLocalPart(),pFactory));
+        resources.remove(0);
 
-        Document document = pFactory.newDocument();
-        document.getStatementOrBundle().addAll(Arrays.asList(quote, attr1, original, wdf));
+        for (TooManyDocuments resource : resources) {
+            statements.add(pFactory.newEntity(namespace.qualifiedName(getPrefix(),resource.getFile().getName(),pFactory)));
+        }
+        for (StatementOrBundle statement : statements) {
+            Identifiable temp = (Identifiable) statement;
+            specialization.add(pFactory.newSpecializationOf(temp.getId(), master.getId()));
+        }
+
+        document.getStatementOrBundle().add(master);
+        document.getStatementOrBundle().addAll(statements);
+        document.getStatementOrBundle().addAll(specialization);
         document.setNamespace(namespace);
         return document;
     }

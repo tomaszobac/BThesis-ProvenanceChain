@@ -11,7 +11,7 @@ import java.util.regex.Pattern;
 
 public class test {
     public static void main(String[] args) {
-        String provNFile = "src/main/resources/bthesis-provenancechain-digpat/01/test.provn";
+        String provNFile = "src/main/resources/bthesis-provenancechain-digpat/test.provn";
 
         ProvFactory provFactory = new ProvFactory();
         InteropFramework intF=new InteropFramework();

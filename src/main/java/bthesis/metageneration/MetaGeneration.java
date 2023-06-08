@@ -5,6 +5,7 @@ import org.openprovenance.prov.model.Document;
 
 import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -14,6 +15,7 @@ public class MetaGeneration {
     List<TooManyDocuments> documents;
 
     public MetaGeneration(List<File> files) {
+        this.documents = new ArrayList<>();
         setDocuments(files);
     }
 
@@ -30,8 +32,8 @@ public class MetaGeneration {
     public Document generate() throws IOException, NoSuchAlgorithmException {
         HashDocument hasher = new HashDocument();
         hasher.addHashes(getDocuments());
-
-        return null;//metadocument;
+        MetaBuilder meta = new MetaBuilder();
+        return meta.makeDocument(getDocuments());
     }
 
 }
