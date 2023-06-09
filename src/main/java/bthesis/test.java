@@ -21,6 +21,12 @@ public class test {
         Document document = intF.readDocumentFromFile(provNFile);
         Bundle bundle = (Bundle) document.getStatementOrBundle().get(1);
         System.out.println();
+        System.out.println("Bundle ID: " + document.getNamespace().getDefaultNamespace());
+        System.out.println();
+        System.out.println("Bundle ID: " + document.getNamespace().toString());
+        System.out.println();
+        System.out.println("Bundle ID: " + document.getNamespace().getParent());
+        /*System.out.println();
         System.out.println("Bundle ID: " + bundle.getId());
         System.out.println();
         System.out.println("Bundle prefix: " + bundle.getId().getPrefix());
@@ -39,6 +45,6 @@ public class test {
         System.out.println();
         System.out.println("Bundle Statement: " + bundle.getStatement());
         System.out.println();
-        System.out.println(file.getName());
+        System.out.println(file.getName());*/
     }
 }

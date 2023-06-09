@@ -6,7 +6,6 @@ import java.io.File;
 import java.nio.file.Path;
 
 public class TooManyDocuments {
-    File file;
     Document document;
     Path path;
     String md5;
@@ -14,13 +13,8 @@ public class TooManyDocuments {
 
     public TooManyDocuments(File file) {
         InteropFramework intF = new InteropFramework();
-        this.file = file;
         this.path = Path.of(file.getAbsolutePath());
         this.document = intF.readDocumentFromFile(file.getAbsolutePath());
-    }
-
-    public File getFile() {
-        return file;
     }
 
     public Document getDocument() {

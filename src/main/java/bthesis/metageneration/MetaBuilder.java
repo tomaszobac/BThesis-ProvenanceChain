@@ -8,12 +8,7 @@ import org.openprovenance.prov.model.Identifiable;
 import org.openprovenance.prov.model.Namespace;
 import org.openprovenance.prov.model.ProvFactory;
 import org.openprovenance.prov.model.StatementOrBundle;
-import org.openprovenance.prov.model.WasAttributedTo;
-import org.openprovenance.prov.model.WasDerivedFrom;
-
-import java.io.File;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 public class MetaBuilder {
@@ -57,10 +52,16 @@ public class MetaBuilder {
         namespace.register(getPrefix(), getNsuri());
 
         Entity master = pFactory.newEntity(namespace.qualifiedName(getPrefix(),bundle.getId().getLocalPart(),pFactory));
+        pFactory.addLabel(master, "sha256_" + resources.get(0).getSha256());
+        pFactory.addLabel(master, "md5_" + resources.get(0).getMd5());
         resources.remove(0);
 
         for (TooManyDocuments resource : resources) {
-            statements.add(pFactory.newEntity(namespace.qualifiedName(getPrefix(),resource.getFile().getName(),pFactory)));
+            bundle = (Bundle) resource.getDocument().getStatementOrBundle().get(0);
+            Entity temp = pFactory.newEntity(namespace.qualifiedName(getPrefix(),bundle.getId().getLocalPart(),pFactory));
+            pFactory.addLabel(temp, "sha256_" + resource.getSha256());
+            pFactory.addLabel(temp, "md5_" + resource.getMd5());
+            statements.add(temp);
         }
         for (StatementOrBundle statement : statements) {
             Identifiable temp = (Identifiable) statement;

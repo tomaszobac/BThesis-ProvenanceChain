@@ -1,7 +1,7 @@
 document
   prefix ns_surgery <https://gitlab.ics.muni.cz/396340/bthesis-provenancechain-digpat/-/tree/master/01/>
 
-  bundle ns_surgery:01_sample_acquisition.provn
+  bundle ns_surgery:01_sample_acquisition_version-3.provn
     prefix ns_surgery <https://gitlab.ics.muni.cz/396340/bthesis-provenancechain-digpat/-/tree/master/01/>
     prefix ns_pathology <pathology_uri>
     prefix cpm <cpm_uri>
