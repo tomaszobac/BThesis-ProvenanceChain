@@ -21,30 +21,30 @@ public class test {
         Document document = intF.readDocumentFromFile(provNFile);
         Bundle bundle = (Bundle) document.getStatementOrBundle().get(1);
         System.out.println();
-        System.out.println("Bundle ID: " + document.getNamespace().getDefaultNamespace());
+        System.out.println("Bundle ID: " + document.getNamespace().getDefaultNamespace()); //null
         System.out.println();
-        System.out.println("Bundle ID: " + document.getNamespace().toString());
+        System.out.println("Bundle ID: " + document.getNamespace().toString()); //[Namespace (null) {xsd=http://www.w3.org/2001/XMLSchema#, prov=http://www.w3.org/ns/prov#, ns_surgery=https://gitlab.ics.muni.cz/396340/bthesis-provenancechain-digpat/-/tree/master/01/}, parent: null]
         System.out.println();
-        System.out.println("Bundle ID: " + document.getNamespace().getParent());
-        /*System.out.println();
-        System.out.println("Bundle ID: " + bundle.getId());
+        System.out.println("Bundle ID: " + document.getNamespace().getParent()); //null
         System.out.println();
-        System.out.println("Bundle prefix: " + bundle.getId().getPrefix());
+        System.out.println("Bundle ID: " + bundle.getId()); //'ns_surgeryy:{{https://gitlab.ics.muni.cz/396340/bthesis-provenancechain-digpat/-/tree/master/012/}}01_sample_acquisition2.provn'
         System.out.println();
-        System.out.println("Bundle local: " + bundle.getId().getLocalPart());
+        System.out.println("Bundle prefix: " + bundle.getId().getPrefix()); //ns_surgeryy
         System.out.println();
-        System.out.println("Bundle nsURI: " + bundle.getId().getNamespaceURI());
+        System.out.println("Bundle local: " + bundle.getId().getLocalPart()); //01_sample_acquisition2.provn
         System.out.println();
-        System.out.println("Bundle URI: " + bundle.getId().getUri());
+        System.out.println("Bundle nsURI: " + bundle.getId().getNamespaceURI()); //https://gitlab.ics.muni.cz/396340/bthesis-provenancechain-digpat/-/tree/master/012/
         System.out.println();
-        System.out.println("Bundle namespace: " + bundle.getNamespace());
+        System.out.println("Bundle URI: " + bundle.getId().getUri()); //https://gitlab.ics.muni.cz/396340/bthesis-provenancechain-digpat/-/tree/master/012/01_sample_acquisition2.provn
         System.out.println();
-        System.out.println("Bundle def namespace: " + bundle.getNamespace().getDefaultNamespace());
+        System.out.println("Bundle namespace: " + bundle.getNamespace()); //[Namespace (null) {dct=http://purl.org/dc/terms/, xsd=http://www.w3.org/2001/XMLSchema#, cpm=cpm_uri, prov=http://www.w3.org/ns/prov#, ns_pathology=pathology_uri, ns_surgeryy=https://gitlab.ics.muni.cz/396340/bthesis-provenancechain-digpat/-/tree/master/012/}, parent: [Namespace (null) {xsd=http://www.w3.org/2001/XMLSchema#, prov=http://www.w3.org/ns/prov#, ns_surgery=https://gitlab.ics.muni.cz/396340/bthesis-provenancechain-digpat/-/tree/master/01/}, parent: null]]
         System.out.println();
-        System.out.println("Bundle qualified name: " + bundle.getNamespace().qualifiedName("ns_surgery", "test", provFactory));
+        System.out.println("Bundle def namespace: " + bundle.getNamespace().getDefaultNamespace()); //null
         System.out.println();
-        System.out.println("Bundle Statement: " + bundle.getStatement());
+        System.out.println("Bundle qualified name: " + bundle.getNamespace().qualifiedName("ns_surgery", "test", provFactory)); //'ns_surgery:{https://gitlab.ics.muni.cz/396340/bthesis-provenancechain-digpat/-/tree/master/01/}test'
         System.out.println();
-        System.out.println(file.getName());*/
+        System.out.println("Bundle Statement: " + bundle.getStatement()); //celý file (není stejný jako origo)
+        System.out.println();
+        System.out.println(file.getName()); //test.provn
     }
 }

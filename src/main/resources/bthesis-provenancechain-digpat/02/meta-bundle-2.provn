@@ -1,8 +1,0 @@
-document
-  prefix ns_surgery <https://gitlab.ics.muni.cz/396340/bthesis-provenancechain-digpat/-/tree/master/02/>
-
-  entity(ns_surgery:abstract-02_scanning.provn)
-  entity(ns_surgery:02_scanning.provn, [prov:type="prov:bundle"])
-  specializationOf(ns_surgery:02_scanning.provn, ns_surgery:abstract-02_scanning.provn)
-
-endDocument
