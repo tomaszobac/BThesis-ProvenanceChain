@@ -7,7 +7,7 @@ document
     prefix cpm <cpm_uri>
     prefix dct <http://purl.org/dc/terms/>
 
-    entity(ns_surgery:sampleConnector, [prov:type="cpm:senderConnector", cpm:receiverBundleId="ns_pathology:02_scanning.provn", cpm:receiverServiceUri="#URI#"])
+    entity(ns_surgery:sampleConnector, [prov:type='cpm:senderConnector', cpm:receiverBundleId='ns_pathology:02_scanning.provn', cpm:receiverServiceUri="#URI#"])
     agent(ns_surgery:pathologyDepartment, [prov:type="cpm:receiverAgent", cpm:contactIdPid=""])
     entity(ns_surgery:externalInput, [prov:type="cpm:externalInputConnector", cpm:currentBundle="ns_surgery:01_sample_acquisition.provn"])
     activity(ns_surgery:sampleAcquisition, -, -, [prov:type="cpm:mainActivity", dct:hasPart='ns_surgery:biomaterialCollection', dct:hasPart='ns_surgery:samplePreparation', dct:hasPart='ns_surgery:sampleTransport'])

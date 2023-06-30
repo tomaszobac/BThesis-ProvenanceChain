@@ -11,16 +11,49 @@ import java.util.regex.Pattern;
 
 public class test {
     public static void main(String[] args) {
-        String provNFile = "src/main/resources/bthesis-provenancechain-digpat/test.provn";
+        String provNFile = "src/main/resources/bthesis-provenancechain-digpat/01/01_sample_acquisition.provn";
 
         ProvFactory provFactory = new ProvFactory();
         InteropFramework intF=new InteropFramework();
-        Pattern pattern = Pattern.compile("\\}\\}(.+)$");
-        File file = new File(provNFile);
+        //Pattern pattern = Pattern.compile("\\}\\}(.+)$");
+        //File file = new File(provNFile);
 
+
+        /*for (StatementOrBundle sob : document.getStatementOrBundle()) {
+            if (sob instanceof org.openprovenance.prov.model.Entity) {
+                Entity e = (Entity) sob;
+                for (org.openprovenance.prov.model.Attribute attr : e.getOther()) {
+                    if (attr.getQualifiedName(attr.getKind()).getLocalPart().equals("prov:type")) {
+                        if (attr.getValue().toString().equals("cpm:senderConnector")) {
+                            System.out.println("Entity with prov:type=senderconnector: " + e.getId().getUri());
+                        }
+                    }
+                }
+            }
+        }*/
+
+        AttributeProcessor attributeProcessor = new AttributeProcessor()
         Document document = intF.readDocumentFromFile(provNFile);
-        Bundle bundle = (Bundle) document.getStatementOrBundle().get(1);
-        System.out.println();
+        Bundle bundle = (Bundle) document.getStatementOrBundle().get(0);
+        for (Statement statement : bundle.getStatement()) {
+            if (statement instanceof Entity) { // Check if the statement is an Entity
+                Entity entity = (Entity) statement;
+                System.out.println("entity: " + entity.getId());
+                System.out.println("entity: " + entity.getOther());
+                System.out.println("entity: " + entity.getLocation());
+                for (org.openprovenance.prov.model.Attribute attr : entity.getOther()) {
+                    System.out.println("attribute: " + attr.getValue());
+                    /*if (attr.getQualifiedName(attr.getKind()).getLocalPart().equals("prov:type")) {
+                        if (attr.getValue().toString().equals("cpm:senderConnector")) {
+                            System.out.println("Entity with prov:type=senderconnector: " + entity.getId().getUri());
+                        }
+                    }*/
+                }
+                System.out.println();
+            }
+        }
+
+        /*System.out.println();
         System.out.println("Bundle ID: " + document.getNamespace().getDefaultNamespace()); //null
         System.out.println();
         System.out.println("Bundle ID: " + document.getNamespace().toString()); //[Namespace (null) {xsd=http://www.w3.org/2001/XMLSchema#, prov=http://www.w3.org/ns/prov#, ns_surgery=https://gitlab.ics.muni.cz/396340/bthesis-provenancechain-digpat/-/tree/master/01/}, parent: null]
@@ -45,6 +78,6 @@ public class test {
         System.out.println();
         System.out.println("Bundle Statement: " + bundle.getStatement()); //celý file (není stejný jako origo)
         System.out.println();
-        System.out.println(file.getName()); //test.provn
+        System.out.println(file.getName()); //test.provn*/
     }
 }
