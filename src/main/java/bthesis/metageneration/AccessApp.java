@@ -28,7 +28,7 @@ public class AccessApp {
         String path2 = scanner.nextLine();
 
         if (path2.isBlank()) {
-            path2 = path1;
+            path2 = "src/main/resources"; //path1
         }
 
         scanner.close();

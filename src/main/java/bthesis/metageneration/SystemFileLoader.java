@@ -23,18 +23,28 @@ public class SystemFileLoader implements FileLoader{
         List<File> fileList = new ArrayList<>();
         File directory = new File(path);
 
-        if(directory.isDirectory()){
+        loadFilesRecursive(directory, fileList);
+
+        return fileList;
+    }
+
+    private void loadFilesRecursive(File directory, List<File> fileList) {
+        if (directory.isDirectory()) {
             File[] files = directory.listFiles();
-            if(files != null) {
-                for(File file : files) {
-                    if(file.isFile() && isSupportedExtension(file)) {
+            if (files != null) {
+                for (File file : files) {
+                    if (file.isDirectory()) {
+                        loadFilesRecursive(file, fileList);
+                    } else if (isSupportedExtension(file)) {
                         fileList.add(file);
                     }
                 }
             }
+        } else if (isSupportedExtension(directory)) {
+            fileList.add(directory);
         }
-        return fileList;
     }
+
 
     private boolean isSupportedExtension(File file) {
         String name = file.getName();

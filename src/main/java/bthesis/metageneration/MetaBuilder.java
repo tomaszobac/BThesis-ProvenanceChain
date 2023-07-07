@@ -4,6 +4,7 @@ import org.openprovenance.prov.interop.InteropFramework;
 import org.openprovenance.prov.model.Bundle;
 import org.openprovenance.prov.model.Document;
 import org.openprovenance.prov.model.Entity;
+import org.openprovenance.prov.model.Entry;
 import org.openprovenance.prov.model.Identifiable;
 import org.openprovenance.prov.model.Namespace;
 import org.openprovenance.prov.model.ProvFactory;
@@ -52,6 +53,8 @@ public class MetaBuilder {
         namespace.register(getPrefix(), getNsuri());
 
         Entity master = pFactory.newEntity(namespace.qualifiedName(getPrefix(),bundle.getId().getLocalPart(),pFactory));
+        pFactory.
+        Entry typeEntry = pFactory.newEntry(pFactory.newQualifiedName("prov", "type", "prefix"), pFactory.newKey("cpm:senderConnector"));
         pFactory.addLabel(master, "sha256_" + resources.get(0).getSha256());
         pFactory.addLabel(master, "md5_" + resources.get(0).getMd5());
         resources.remove(0);

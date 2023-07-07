@@ -1,14 +1,10 @@
 package bthesis.metageneration;
 
-import org.openprovenance.prov.interop.InteropFramework;
 import org.openprovenance.prov.model.Document;
-
 import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.io.File;
 
 public class MetaGeneration {
@@ -17,6 +13,11 @@ public class MetaGeneration {
     public MetaGeneration(List<File> files) {
         this.documents = new ArrayList<>();
         setDocuments(files);
+    }
+
+    public MetaGeneration(File file) {
+        this.documents = new ArrayList<>();
+        this.documents.add(new TooManyDocuments(file));
     }
 
     public void setDocuments(List<File> files) {
