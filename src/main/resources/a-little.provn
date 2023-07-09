@@ -1,4 +1,3 @@
-
 document
   prefix xsd <http://www.w3.org/2001/XMLSchema>
   prefix provbook <http://www.provbook.org>

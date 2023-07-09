@@ -1,14 +1,8 @@
 package bthesis.metageneration;
 
 import org.openprovenance.prov.interop.InteropFramework;
-import org.openprovenance.prov.model.Bundle;
-import org.openprovenance.prov.model.Document;
-import org.openprovenance.prov.model.Entity;
-import org.openprovenance.prov.model.Entry;
-import org.openprovenance.prov.model.Identifiable;
-import org.openprovenance.prov.model.Namespace;
-import org.openprovenance.prov.model.ProvFactory;
-import org.openprovenance.prov.model.StatementOrBundle;
+import org.openprovenance.prov.model.*;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -50,13 +44,15 @@ public class MetaBuilder {
         setPrefix(bundle.getId().getPrefix());
         setNsuri(bundle.getId().getNamespaceURI());
 
+        Namespace placeholderns = new Namespace();
         namespace.register(getPrefix(), getNsuri());
+        placeholderns.register("hash", "");
 
         Entity master = pFactory.newEntity(namespace.qualifiedName(getPrefix(),bundle.getId().getLocalPart(),pFactory));
-        pFactory.
-        Entry typeEntry = pFactory.newEntry(pFactory.newQualifiedName("prov", "type", "prefix"), pFactory.newKey("cpm:senderConnector"));
+        //Entry typeEntry = pFactory.newEntry(pFactory.newKey((Object) "cpm:senderConnector", pFactory.newQualifiedName("prov", "type", "prefix")), master.getId());
         pFactory.addLabel(master, "sha256_" + resources.get(0).getSha256());
         pFactory.addLabel(master, "md5_" + resources.get(0).getMd5());
+        pFactory.addAttribute(master, pFactory.newOther("", "sha256", "hash", resources.get(0).getSha256(), null));
         resources.remove(0);
 
         for (TooManyDocuments resource : resources) {
