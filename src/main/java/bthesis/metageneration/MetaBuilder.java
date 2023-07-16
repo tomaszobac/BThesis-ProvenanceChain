@@ -4,73 +4,52 @@ import org.openprovenance.prov.interop.InteropFramework;
 import org.openprovenance.prov.model.*;
 
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 public class MetaBuilder {
     private final ProvFactory pFactory;
     private final Namespace namespace;
-    private String prefix;
-    private String nsuri;
 
     public MetaBuilder() {
         this.pFactory = InteropFramework.getDefaultFactory();
-        namespace = new Namespace();
-        namespace.addKnownNamespaces();
-    }
-
-    public String getPrefix() {
-        return prefix;
-    }
-
-    public void setPrefix(String prefix) {
-        this.prefix = prefix;
-    }
-
-    public String getNsuri() {
-        return nsuri;
-    }
-
-    public void setNsuri(String nsuri) {
-        this.nsuri = nsuri;
+        this.namespace = new Namespace();
+        this.namespace.addKnownNamespaces();
     }
 
     public Document makeDocument(List<TooManyDocuments> resources) {
-        List<StatementOrBundle> statements = new ArrayList<>();
-        List<StatementOrBundle> specialization = new ArrayList<>();
+        Map<Statement, Statement> statements = new LinkedHashMap<>();
+        List<Statement> specialization = new ArrayList<>();
 
         Document document = pFactory.newDocument();
-        Bundle bundle = (Bundle) resources.get(0).getDocument().getStatementOrBundle().get(0);
-
-        setPrefix(bundle.getId().getPrefix());
-        setNsuri(bundle.getId().getNamespaceURI());
-
-        Namespace placeholderns = new Namespace();
-        namespace.register(getPrefix(), getNsuri());
-        placeholderns.register("hash", "");
-
-        Entity master = pFactory.newEntity(namespace.qualifiedName(getPrefix(),bundle.getId().getLocalPart(),pFactory));
-        //Entry typeEntry = pFactory.newEntry(pFactory.newKey((Object) "cpm:senderConnector", pFactory.newQualifiedName("prov", "type", "prefix")), master.getId());
-        pFactory.addLabel(master, "sha256_" + resources.get(0).getSha256());
-        pFactory.addLabel(master, "md5_" + resources.get(0).getMd5());
-        pFactory.addAttribute(master, pFactory.newOther("", "sha256", "hash", resources.get(0).getSha256(), null));
-        resources.remove(0);
+        Namespace bundlens = new Namespace();
+        bundlens.register("meta", "META_URI");
+        namespace.register("meta", "META_URI");
+        namespace.register("hash", "HASH_URI");
 
         for (TooManyDocuments resource : resources) {
-            bundle = (Bundle) resource.getDocument().getStatementOrBundle().get(0);
-            Entity temp = pFactory.newEntity(namespace.qualifiedName(getPrefix(),bundle.getId().getLocalPart(),pFactory));
-            pFactory.addLabel(temp, "sha256_" + resource.getSha256());
-            pFactory.addLabel(temp, "md5_" + resource.getMd5());
-            statements.add(temp);
+            Bundle bundle = (Bundle) resource.getDocument().getStatementOrBundle().get(0);
+            namespace.register(bundle.getId().getPrefix(), bundle.getId().getNamespaceURI());
+            Entity bundletemp = pFactory.newEntity(namespace.qualifiedName(bundle.getId().getPrefix(),"abstact_" + bundle.getId().getLocalPart(),pFactory));
+            Entity temp = pFactory.newEntity(namespace.qualifiedName(bundle.getId().getPrefix(),bundle.getId().getLocalPart(),pFactory));
+            pFactory.addAttribute(temp, pFactory.newOther("HASH_URI", "sha256", "hash", resource.getSha256(), null));
+            pFactory.addAttribute(temp, pFactory.newOther("HASH_URI", "md5", "hash", resource.getMd5(), null));
+            statements.put(bundletemp, temp);
         }
-        for (StatementOrBundle statement : statements) {
-            Identifiable temp = (Identifiable) statement;
-            specialization.add(pFactory.newSpecializationOf(temp.getId(), master.getId()));
+        for (Statement statement : statements.keySet()) {
+            Identifiable bundletemp = (Identifiable) statement;
+            Identifiable temp = (Identifiable) statements.get(statement);
+            specialization.add(pFactory.newSpecializationOf(temp.getId(), bundletemp.getId()));
         }
 
-        document.getStatementOrBundle().add(master);
-        document.getStatementOrBundle().addAll(statements);
-        document.getStatementOrBundle().addAll(specialization);
-        document.setNamespace(namespace);
+        //document.setNamespace(namespace);
+        document.setNamespace(bundlens);
+        Bundle metabundle = pFactory.newNamedBundle(bundlens.qualifiedName("meta", "metabundle", pFactory),namespace,null);
+        document.getStatementOrBundle().add(metabundle);
+        metabundle.getStatement().addAll(statements.keySet());
+        metabundle.getStatement().addAll(statements.values());
+        metabundle.getStatement().addAll(specialization);
         return document;
     }
 }

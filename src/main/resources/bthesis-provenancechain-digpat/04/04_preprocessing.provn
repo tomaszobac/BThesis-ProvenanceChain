@@ -7,14 +7,14 @@ document
     prefix cpm <cpm_uri>
     prefix dct <http://purl.org/dc/terms/>
 
-    entity(ns_pathology:WSIDataConnector_2, [prov:type="cpm:receiverConnector", cpm:senderBundleId="ns_pathology:02_scanning.provn", cpm:senderServiceUri="#URI#"])
-    entity(ns_RDC:trainDatasetConnector, [prov:type="cpm:senderConnector", cpm:receiverBundleId="ns_RDC:05_training.provn", cpm:receiverServiceUri="#URI#"])
-    entity(ns_RDC:testDatasetConnector, [prov:type="cpm:senderConnector", cpm:receiverBundleId="ns_RDC:06_evaluation.provn", cpm:receiverServiceUri="#URI#"])
-    agent(ns_RDC:pathologyDepartment, [prov:type="cpm:senderAgent", cpm:contactIdPid=""])
-    agent(ns_RDC:researchDataCenter, [prov:type="cpm:receiverAgent", cpm:contactIdPid=""])
-    activity(ns_RDC:receipt, -, -, [prov:type="cpm:receiptActivity"])
-    activity(ns_RDC:preprocessing, -, -, [prov:type="cpm:mainActivity", dct:hasPart="ns_RDC:tilesGeneration", dct:hasPart2="ns_RDC:datasetSplit"])
-    entity(ns_RDC:WSI_data, [prov:type="cpm:externalInputConnector", cpm:currentBundle="ns_RDC:04_preprocessing.provn"])
+    entity(ns_pathology:WSIDataConnector_2, [prov:type='cpm:receiverConnector', cpm:senderBundleId='ns_pathology:02_scanning.provn', cpm:senderServiceUri="#URI#"])
+    entity(ns_RDC:trainDatasetConnector, [prov:type='cpm:senderConnector', cpm:receiverBundleId='ns_RDC:05_training.provn', cpm:receiverServiceUri="#URI#"])
+    entity(ns_RDC:testDatasetConnector, [prov:type='cpm:senderConnector', cpm:receiverBundleId='ns_RDC:06_evaluation.provn', cpm:receiverServiceUri="#URI#"])
+    agent(ns_RDC:pathologyDepartment, [prov:type='cpm:senderAgent', cpm:contactIdPid=""])
+    agent(ns_RDC:researchDataCenter, [prov:type='cpm:receiverAgent', cpm:contactIdPid=""])
+    activity(ns_RDC:receipt, -, -, [prov:type='cpm:receiptActivity'])
+    activity(ns_RDC:preprocessing, -, -, [prov:type='cpm:mainActivity', dct:hasPart='ns_RDC:tilesGeneration', dct:hasPart2='ns_RDC:datasetSplit'])
+    entity(ns_RDC:WSI_data, [prov:type='cpm:externalInputConnector', cpm:currentBundle='ns_RDC:04_preprocessing.provn'])
     entity(ns_RDC:WSI_data-b, [cpm:externalId="wsi-id-1"])
     entity(ns_RDC:tilesBatch1, [cpm:externalId="batch-id-1"])
     entity(ns_RDC:trainDataset, [cpm:externalId="datasetId1"])

@@ -6,10 +6,10 @@ import java.io.File;
 import java.nio.file.Path;
 
 public class TooManyDocuments {
-    Document document;
-    Path path;
-    String md5;
-    String sha256;
+    private Document document;
+    private Path path;
+    private String md5;
+    private String sha256;
 
     public TooManyDocuments(File file) {
         InteropFramework intF = new InteropFramework();

@@ -1,15 +1,30 @@
 document
-prefix hash <>
+prefix meta <META_URI>
+bundle meta:metabundle
+prefix ns_biobabank <https://gitlab.ics.muni.cz/396340/bthesis-provenancechain-digpat/-/tree/master/03/>
+prefix ns_RDC <https://gitlab.ics.muni.cz/396340/bthesis-provenancechain-digpat/-/tree/master/04/>
+prefix ns_pathology <https://gitlab.ics.muni.cz/396340/bthesis-provenancechain-digpat/-/tree/master/02/>
+prefix hash <HASH_URI>
+prefix meta <META_URI>
 prefix ns_surgery <https://gitlab.ics.muni.cz/396340/bthesis-provenancechain-digpat/-/tree/master/01/>
-entity(ns_surgery:01_sample_acquisition.provn,[prov:label = "sha256_76d3c86fd19df47c159af25056f5b3c7a052b3d3ca56569a0ddaaac10856bf2a" %% xsd:string, prov:label = "md5_c576c62c9d88cf5ce4d2440926d78be2" %% xsd:string, hash:sha256 = "76d3c86fd19df47c159af25056f5b3c7a052b3d3ca56569a0ddaaac10856bf2a"])
-entity(ns_surgery:02_scanning.provn,[prov:label = "sha256_90c5fd20ee0672658b547088dff67bc631056c527b14b9c400f9cf23c95058ff" %% xsd:string, prov:label = "md5_22551928d1ab55c4adca11e6a975ad5e" %% xsd:string])
-entity(ns_surgery:03_biobanking.provn,[prov:label = "sha256_4548d379eba00e754eab36f9877d8264419f72cc9d110b4f1174847df5bc69cc" %% xsd:string, prov:label = "md5_2a81ba5f8ca0d9b5ca1cad4ffc7eaa51" %% xsd:string])
-entity(ns_surgery:04_preprocessing.provn,[prov:label = "sha256_6e7c19e173ce3db0f4516bb4e909999ffab3620f51ed51370bc62354df1ceee9" %% xsd:string, prov:label = "md5_f39238740ed99a4469c90ea5ce9b2b6c" %% xsd:string])
-entity(ns_surgery:05_training.provn,[prov:label = "sha256_b4b3f94026917e0fae9c040554a4763e3592dfec8c53abadd0b41fd54404cfca" %% xsd:string, prov:label = "md5_51f8c2ddfd795ea8107b39797c57bb45" %% xsd:string])
-entity(ns_surgery:06_evaluation.provn,[prov:label = "sha256_aba1d7b6f06c6fae123d9c307e13abb871849f5eb50673556baa38b99e8fdc6" %% xsd:string, prov:label = "md5_210eec0e4617c68caed0e0af98ad21a5" %% xsd:string])
-specializationOf(ns_surgery:02_scanning.provn,ns_surgery:01_sample_acquisition.provn)
-specializationOf(ns_surgery:03_biobanking.provn,ns_surgery:01_sample_acquisition.provn)
-specializationOf(ns_surgery:04_preprocessing.provn,ns_surgery:01_sample_acquisition.provn)
-specializationOf(ns_surgery:05_training.provn,ns_surgery:01_sample_acquisition.provn)
-specializationOf(ns_surgery:06_evaluation.provn,ns_surgery:01_sample_acquisition.provn)
+
+entity(ns_surgery:abstact_01_sample_acquisition.provn)
+entity(ns_pathology:abstact_02_scanning.provn)
+entity(ns_biobabank:abstact_03_biobanking.provn)
+entity(ns_RDC:abstact_04_preprocessing.provn)
+entity(ns_RDC:abstact_05_training.provn)
+entity(ns_RDC:abstact_06_evaluation.provn)
+entity(ns_surgery:01_sample_acquisition.provn,[hash:sha256 = "dc3c9b7223906a644f0b5f18cbc43374173562719d496d48c0d8e71d9aab4e12", hash:md5 = "99c93a9d14046fb7b1bdb3db92f411d9"])
+entity(ns_pathology:02_scanning.provn,[hash:sha256 = "90c5fd20ee0672658b547088dff67bc631056c527b14b9c400f9cf23c95058ff", hash:md5 = "22551928d1ab55c4adca11e6a975ad5e"])
+entity(ns_biobabank:03_biobanking.provn,[hash:sha256 = "b09e74d3ed4c109cbf8c3f71ab54bee9c17be64a11f21450aca78adc0bea62cd", hash:md5 = "d290f89d61bd464e2c75b1157c3fbc5d"])
+entity(ns_RDC:04_preprocessing.provn,[hash:sha256 = "1f179e393744fdc4f7b187048ccc928dc8eba7cb2515fd6ba26925412211cf0f", hash:md5 = "47c58c1b6a5bd4b059fd4f7b57e07c3c"])
+entity(ns_RDC:05_training.provn,[hash:sha256 = "b4b3f94026917e0fae9c040554a4763e3592dfec8c53abadd0b41fd54404cfca", hash:md5 = "51f8c2ddfd795ea8107b39797c57bb45"])
+entity(ns_RDC:06_evaluation.provn,[hash:sha256 = "aba1d7b6f06c6fae123d9c307e13abb871849f5eb50673556baa38b99e8fdc6", hash:md5 = "210eec0e4617c68caed0e0af98ad21a5"])
+specializationOf(ns_surgery:01_sample_acquisition.provn,ns_surgery:abstact_01_sample_acquisition.provn)
+specializationOf(ns_pathology:02_scanning.provn,ns_pathology:abstact_02_scanning.provn)
+specializationOf(ns_biobabank:03_biobanking.provn,ns_biobabank:abstact_03_biobanking.provn)
+specializationOf(ns_RDC:04_preprocessing.provn,ns_RDC:abstact_04_preprocessing.provn)
+specializationOf(ns_RDC:05_training.provn,ns_RDC:abstact_05_training.provn)
+specializationOf(ns_RDC:06_evaluation.provn,ns_RDC:abstact_06_evaluation.provn)
+endBundle
 endDocument

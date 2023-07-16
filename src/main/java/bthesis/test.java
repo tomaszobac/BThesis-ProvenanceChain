@@ -4,6 +4,8 @@ import org.openprovenance.prov.model.*;
 import org.openprovenance.prov.xml.ProvFactory;
 import org.openprovenance.prov.interop.InteropFramework;
 
+import javax.xml.namespace.QName;
+
 public class test {
     public static void main(String[] args) {
         String provNFile = "src/main/resources/bthesis-provenancechain-digpat/01/01_sample_acquisition.provn";
@@ -11,31 +13,44 @@ public class test {
         ProvFactory provFactory = new ProvFactory();
         InteropFramework intF=new InteropFramework();
         Document document = intF.readDocumentFromFile(provNFile);
+        //Document document = intF.readDocument("https://gitlab.ics.muni.cz/396340/bthesis-provenancechain-digpat/-/raw/master/01/01_sample_acquisition.provn");
 
         IndexedDocument indexedDocument = new IndexedDocument(provFactory,document);
-        System.out.println("ID type: " + indexedDocument.getEntity("ns_surgery"));
+        //System.out.println("ID type: " + indexedDocument.getEntity("ns_surgery"));
         /*org.openprovenance.prov.model.Attribute attribute = indexedDocument.getEntity("sampleConnector").getType().get(0);
         System.out.println("ID type: " + attribute.getValue());*/
 
         Bundle bundle = (Bundle) document.getStatementOrBundle().get(0);
         for (Statement statement : bundle.getStatement()) {
-            if (statement instanceof Entity) { // Check if the statement is an Entity
+            if (statement instanceof WasDerivedFrom) {
+                WasDerivedFrom derived = (WasDerivedFrom) statement;
+                System.out.println("WasDerivedFrom operations:");
+                System.out.println("getGeneratedEntity: " + derived.getGeneratedEntity());
+                System.out.println("getUsedEntity: " + derived.getUsedEntity());
+                System.out.println();
+            }
+            else if (statement instanceof Entity) {
                 Entity entity = (Entity) statement;
+                System.out.println("Entity operations:");
                 System.out.println("entity ID: " + entity.getId());
                 System.out.println("entity type: " + entity.getType());
-                System.out.println("entity other: " + entity.getOther());
-                System.out.println("entity location: " + entity.getLocation());
-                System.out.println("base bundle operations:");
-                for (org.openprovenance.prov.model.Attribute attr : entity.getOther()) {
-                    System.out.println("attribute type: " + attr.getValue());
-                    ValueConverter valueConverter = new ValueConverter(provFactory);
-                    valueConverter.convertToJava(attr.getQualifiedName(attr.getKind()), attr.getValue().toString());
+                if (entity.getType().get(0).getValue().toString().equals("'cpm:{{cpm_uri}}senderConnector'")){
+                    QualifiedName qn = (QualifiedName) entity.getType().get(0).getValue();
+                    System.out.println("True");
+                    System.out.println(qn.getPrefix());
+                    System.out.println(qn.getLocalPart());
+                } else {
+                    System.out.println("False");
+                    System.out.println(entity.getType().get(0).getValue().toString());
                 }
+                System.out.println();
+                /*System.out.println("entity other: " + entity.getOther());
+                System.out.println("entity location: " + entity.getLocation());
                 System.out.println("AttributeProcessor operations:");
                 AttributeProcessor attributeProcessor = new AttributeProcessor(entity.getOther());
                 System.out.println("AP keys: " + attributeProcessor.attributesWithNamespace("cpm_uri").keySet());
                 System.out.println("AP elements: " + attributeProcessor.attributesWithNamespace("cpm_uri").get("receiverBundleId"));
-                System.out.println();
+                System.out.println();*/
             }
         }
 
