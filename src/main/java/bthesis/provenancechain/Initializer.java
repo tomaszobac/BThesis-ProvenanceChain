@@ -37,7 +37,7 @@ public class Initializer {
     }
 
     private void fillTable() {
-        for (Document document : memory.getDocuments()) {
+        for (Document document : memory.getDocuments().values()) {
             Bundle bundle = (Bundle) document.getStatementOrBundle().get(0);
             for (Statement statement : bundle.getStatement()) {
                 if (statement instanceof Entity) {

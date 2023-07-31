@@ -12,6 +12,7 @@ public class AccessApp {
         String path = "src/main/resources/bthesis-provenancechain-digpat";
         SystemFileLoader inputFileLoader = new SystemFileLoader(path);
         Initializer initializer = new Initializer(inputFileLoader.getFiles());
+        Crawler crawler = new Crawler(initializer);
 
         Scanner scanner = new Scanner(System.in);
 
@@ -25,6 +26,7 @@ public class AccessApp {
         Thread.sleep(500);
         System.out.println("Enter a command (or 'exit' to quit): ");
         while (true) {
+            System.out.print("$> ");
             String command = scanner.nextLine();
 
             if (command.equalsIgnoreCase("exit")) {

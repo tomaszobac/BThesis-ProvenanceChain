@@ -15,8 +15,8 @@ public class test {
         Document document = intF.readDocumentFromFile(provNFile);
         //Document document = intF.readDocument("https://gitlab.ics.muni.cz/396340/bthesis-provenancechain-digpat/-/raw/master/01/01_sample_acquisition.provn");
 
-        IndexedDocument indexedDocument = new IndexedDocument(provFactory,document);
-        //System.out.println("ID type: " + indexedDocument.getEntity("ns_surgery"));
+        //IndexedDocument indexedDocument = new IndexedDocument(provFactory,document);
+        //System.out.println("ID type: " + indexedDocument.getEntity(qualifiedName).getType());
         /*org.openprovenance.prov.model.Attribute attribute = indexedDocument.getEntity("sampleConnector").getType().get(0);
         System.out.println("ID type: " + attribute.getValue());*/
 
@@ -34,7 +34,7 @@ public class test {
                 System.out.println("Entity operations:");
                 System.out.println("entity ID: " + entity.getId());
                 System.out.println("entity type: " + entity.getType());
-                if (entity.getType().get(0).getValue().toString().equals("'cpm:{{cpm_uri}}senderConnector'")){
+                /*if (entity.getType().get(0).getValue().toString().equals("'cpm:{{cpm_uri}}senderConnector'")){
                     QualifiedName qn = (QualifiedName) entity.getType().get(0).getValue();
                     System.out.println("True");
                     System.out.println(qn.getPrefix());
@@ -42,7 +42,7 @@ public class test {
                 } else {
                     System.out.println("False");
                     System.out.println(entity.getType().get(0).getValue().toString());
-                }
+                }*/
                 System.out.println();
                 /*System.out.println("entity other: " + entity.getOther());
                 System.out.println("entity location: " + entity.getLocation());
