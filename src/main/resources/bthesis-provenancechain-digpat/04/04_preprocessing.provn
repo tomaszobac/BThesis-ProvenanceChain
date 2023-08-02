@@ -7,7 +7,7 @@ document
     prefix cpm <cpm_uri>
     prefix dct <http://purl.org/dc/terms/>
 
-    entity(ns_pathology:WSIDataConnector_2, [prov:type='cpm:receiverConnector', cpm:senderBundleId='ns_pathology:02_scanning.provn', cpm:senderServiceUri="#URI#"])
+    entity(ns_pathology:WSIDataConnector2, [prov:type='cpm:receiverConnector', cpm:senderBundleId='ns_pathology:02_scanning.provn', cpm:senderServiceUri="#URI#"])
     entity(ns_RDC:trainDatasetConnector, [prov:type='cpm:senderConnector', cpm:receiverBundleId='ns_RDC:05_training.provn', cpm:receiverServiceUri="#URI#"])
     entity(ns_RDC:testDatasetConnector, [prov:type='cpm:senderConnector', cpm:receiverBundleId='ns_RDC:06_evaluation.provn', cpm:receiverServiceUri="#URI#"])
     agent(ns_RDC:pathologyDepartment, [prov:type='cpm:senderAgent', cpm:contactIdPid=""])
@@ -29,12 +29,12 @@ document
     wasGeneratedBy(ns_RDC:trainDataset, ns_RDC:datasetSplit, -)
     wasGeneratedBy(ns_RDC:testDataset, ns_RDC:datasetSplit, -)
     wasGeneratedBy(ns_RDC:WSI_data, ns_RDC:receipt, -)
-    wasAttributedTo(ns_pathology:WSIDataConnector_2, ns_RDC:pathologyDepartment)
+    wasAttributedTo(ns_pathology:WSIDataConnector2, ns_RDC:pathologyDepartment)
     wasAttributedTo(ns_RDC:testDatasetConnector, ns_RDC:researchDataCenter)
     wasAttributedTo(ns_RDC:trainDatasetConnector, ns_RDC:researchDataCenter)
-    wasDerivedFrom(ns_RDC:WSI_data, ns_pathology:WSIDataConnector_2, -, -, -)
-    used(ns_RDC:receipt, ns_pathology:WSIDataConnector_2, -)
-    wasInvalidatedBy(ns_pathology:WSIDataConnector_2, ns_RDC:receipt, -)
+    wasDerivedFrom(ns_RDC:WSI_data, ns_pathology:WSIDataConnector2, -, -, -)
+    used(ns_RDC:receipt, ns_pathology:WSIDataConnector2, -)
+    wasInvalidatedBy(ns_pathology:WSIDataConnector2, ns_RDC:receipt, -)
     used(ns_RDC:preprocessing, ns_RDC:WSI_data, -)
     wasDerivedFrom(ns_RDC:testDatasetConnector, ns_RDC:WSI_data, -, -, -)
     wasGeneratedBy(ns_RDC:testDatasetConnector, ns_RDC:preprocessing, -)

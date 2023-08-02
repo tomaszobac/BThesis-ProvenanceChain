@@ -37,11 +37,17 @@ public class AccessApp {
                 System.out.println("Enter bundle ID ('prefix:{{uri}}local'): ");
                 String document_id = scanner.nextLine();
                 crawler.crawl(entity_id,document_id,0);
-                System.out.println(crawler.getPrec());
+                crawler.getPrec().forEach(System.out::println);
                 crawler.cleanup();
                 System.out.println();
             } else if (command.equalsIgnoreCase("next")) {
-                System.out.println("Not implemented yet");
+                System.out.println("Enter entity ID ('prefix:{{uri}}local'): ");
+                String entity_id = scanner.nextLine();
+                System.out.println("Enter bundle ID ('prefix:{{uri}}local'): ");
+                String document_id = scanner.nextLine();
+                crawler.crawl(entity_id,document_id,1);
+                crawler.getSucc().forEach(System.out::println);
+                crawler.cleanup();
                 System.out.println();
             } else if (command.equalsIgnoreCase("resolve")) {
                 System.out.println("Enter entity ID ('prefix:{{uri}}local'): ");

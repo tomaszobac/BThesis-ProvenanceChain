@@ -6,7 +6,6 @@ import org.openprovenance.prov.model.Entity;
 import org.openprovenance.prov.model.QualifiedName;
 import org.openprovenance.prov.model.Statement;
 import org.openprovenance.prov.model.WasDerivedFrom;
-import org.openprovenance.prov.xml.ProvFactory;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,18 +15,17 @@ public class Crawler {
     private List<QualifiedName> done;
     private List<QualifiedName> precursors;
     private List<QualifiedName> successors;
-    private final QualifiedName externalInputConnector;
-    private final org.openprovenance.prov.vanilla.QualifiedName receiverConnector;
+    //private final QualifiedName externalInputConnector;
+    private final QualifiedName receiverConnector;
     private final QualifiedName senderConnector;
     public Crawler(Initializer initializer) {
-        ProvFactory provFactory = new ProvFactory();
         this.initializer = initializer;
         this.done = new ArrayList<>();
         this.precursors = new ArrayList<>();
         this.successors = new ArrayList<>();
-        this.externalInputConnector = provFactory.newQualifiedName("cpm_uri", "externalInputConnector","cpm");
-        this.receiverConnector = (org.openprovenance.prov.vanilla.QualifiedName) provFactory.newQualifiedName("cpm_uri", "receiverConnector","cpm");
-        this.senderConnector = provFactory.newQualifiedName("cpm_uri", "senderConnector","cpm");
+        //this.externalInputConnector = new org.openprovenance.prov.vanilla.QualifiedName("cpm_uri", "externalInputConnector","cpm");
+        this.receiverConnector = new org.openprovenance.prov.vanilla.QualifiedName("cpm_uri", "receiverConnector","cpm");
+        this.senderConnector = new org.openprovenance.prov.vanilla.QualifiedName("cpm_uri", "senderConnector","cpm");
     }
 
     public List<QualifiedName> getPrec() {
@@ -70,10 +68,6 @@ public class Crawler {
         if (entity_type.equals(this.senderConnector)) {
             this.precursors.add(entity_id);
         }
-        System.out.println("Type uri: " + entity_type.getUri());
-        System.out.println("Type class: " + entity_type.getClass());
-        System.out.println("My uri: " + this.receiverConnector.getUri());
-        System.out.println("My class: " + this.receiverConnector.getClass());
         if (entity_type.equals(this.receiverConnector)) {
            getPrecursors(entity_id, resolve(entity_id,this.receiverConnector).get(2));
         } else {
@@ -94,8 +88,6 @@ public class Crawler {
         }
     }
 
-
-
     public void getSuccessors(QualifiedName entity, QualifiedName bundle) {
         Document document = this.initializer.getMemory().getDocuments().get(bundle);
         QualifiedName entity_type = getEntityType(entity, document);
@@ -104,7 +96,7 @@ public class Crawler {
             this.successors.add(entity);
         }
         if (entity_type.equals(this.senderConnector)) {
-            getPrecursors(entity, resolve(entity,this.senderConnector).get(2));
+            getSuccessors(entity, resolve(entity,this.senderConnector).get(2));
         } else {
             Bundle temp = (Bundle) document.getStatementOrBundle().get(0);
             for (Statement statement : temp.getStatement()) {
@@ -117,7 +109,7 @@ public class Crawler {
                 QualifiedName connector = derived.getGeneratedEntity();
                 if (!(this.done.contains(connector))) {
                     this.done.add(connector);
-                    getPrecursors(connector,bundle);
+                    getSuccessors(connector,bundle);
                 }
             }
         }
@@ -126,8 +118,7 @@ public class Crawler {
     private QualifiedName getEntityType (QualifiedName entity_id, Document document){
         Bundle bundle = (Bundle) document.getStatementOrBundle().get(0);
         for (Statement statement : bundle.getStatement()) {
-            if (statement instanceof Entity) {
-                Entity entity = (Entity) statement;
+            if (statement instanceof Entity entity) {
                 if (entity.getId().equals(entity_id)) {
                     return (QualifiedName) entity.getType().get(0).getValue();
                 }
