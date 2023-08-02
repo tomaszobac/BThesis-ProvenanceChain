@@ -21,6 +21,10 @@ public class test {
         System.out.println("ID type: " + attribute.getValue());*/
 
         Bundle bundle = (Bundle) document.getStatementOrBundle().get(0);
+        QualifiedName externalInputConnector2 = provFactory.newQualifiedName(new QName("cpm_uri", "externalInputConnector","cpm"));
+        QualifiedName externalInputConnector = provFactory.newQualifiedName("cpm_uri", "externalInputConnector","cpm");
+        System.out.println(externalInputConnector.toString());
+        System.out.println(externalInputConnector2);
         for (Statement statement : bundle.getStatement()) {
             if (statement instanceof WasDerivedFrom) {
                 WasDerivedFrom derived = (WasDerivedFrom) statement;
