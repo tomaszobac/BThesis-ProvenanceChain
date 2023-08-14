@@ -21,12 +21,6 @@ public class test {
         System.out.println("ID type: " + attribute.getValue());*/
 
         Bundle bundle = (Bundle) document.getStatementOrBundle().get(0);
-        QualifiedName externalInputConnector = provFactory.newQualifiedName("cpm_uri", "externalInputConnector","cpm");
-        QualifiedName externalInputConnector2 = provFactory.newQualifiedName(new QName("cpm_uri", "externalInputConnector","cpm"));
-        QualifiedName externalInputConnector3 = new org.openprovenance.prov.vanilla.QualifiedName("cpm_uri", "externalInputConnector","cpm");
-        System.out.println(externalInputConnector.toString());
-        System.out.println(externalInputConnector2);
-        System.out.println(externalInputConnector3);
         for (Statement statement : bundle.getStatement()) {
             if (statement instanceof WasDerivedFrom) {
                 WasDerivedFrom derived = (WasDerivedFrom) statement;
@@ -34,6 +28,14 @@ public class test {
                 System.out.println("getGeneratedEntity: " + derived.getGeneratedEntity());
                 System.out.println("getUsedEntity: " + derived.getUsedEntity());
                 System.out.println();
+            }
+            else if (statement instanceof Activity) {
+                Activity activity = (Activity) statement;
+                System.out.println("Activity class: " + activity.getType().get(0).getValue().getClass());
+                QualifiedName mainActivity = new org.openprovenance.prov.vanilla.QualifiedName("cpm_uri", "mainActivity","cpm");
+                QualifiedName mainActivity2 = new org.openprovenance.prov.vanilla.QualifiedName("cpm_uri", "mainActivity","");
+                System.out.println("test equals: " + mainActivity.equals(mainActivity2));
+                activity.getOther().forEach(x -> System.out.println(x.getValue() + " + " + x.getValue().getClass()));
             }
             else if (statement instanceof Entity) {
                 Entity entity = (Entity) statement;

@@ -1,5 +1,6 @@
 package bthesis.provenancechain;
 
+import org.openprovenance.prov.model.Activity;
 import org.openprovenance.prov.model.Bundle;
 import org.openprovenance.prov.model.Document;
 import org.openprovenance.prov.model.Entity;
@@ -13,9 +14,11 @@ import java.util.List;
 public class Crawler {
     private final Initializer initializer;
     private List<QualifiedName> done;
+    private List<QualifiedName> document_done;
     private List<QualifiedName> precursors;
     private List<QualifiedName> successors;
-    //private final QualifiedName externalInputConnector;
+    private List<List<QualifiedName>> activities;
+    private final QualifiedName mainActivity;
     private final QualifiedName receiverConnector;
     private final QualifiedName senderConnector;
     public Crawler(Initializer initializer) {
@@ -23,17 +26,22 @@ public class Crawler {
         this.done = new ArrayList<>();
         this.precursors = new ArrayList<>();
         this.successors = new ArrayList<>();
-        //this.externalInputConnector = new org.openprovenance.prov.vanilla.QualifiedName("cpm_uri", "externalInputConnector","cpm");
+        this.document_done = new ArrayList<>();
+        this.activities = new ArrayList<>(new ArrayList<>());
+        this.mainActivity = new org.openprovenance.prov.vanilla.QualifiedName("cpm_uri", "mainActivity","cpm");
         this.receiverConnector = new org.openprovenance.prov.vanilla.QualifiedName("cpm_uri", "receiverConnector","cpm");
         this.senderConnector = new org.openprovenance.prov.vanilla.QualifiedName("cpm_uri", "senderConnector","cpm");
     }
 
     public List<QualifiedName> getPrec() {
-        return precursors;
+        return this.precursors;
     }
 
     public List<QualifiedName> getSucc() {
-        return successors;
+        return this.successors;
+    }
+    public List<List<QualifiedName>> getActiv() {
+        return this.activities;
     }
 
     public void crawl(String entity, String bundle, int mode) {
@@ -59,19 +67,26 @@ public class Crawler {
         this.done = new ArrayList<>();
         this.precursors = new ArrayList<>();
         this.successors = new ArrayList<>();
+        this.activities = new ArrayList<>(new ArrayList<>());
     }
 
     public void getPrecursors(QualifiedName entity_id, QualifiedName bundle_id) {
         Document document = this.initializer.getMemory().getDocuments().get(bundle_id);
         QualifiedName entity_type = getEntityType(entity_id, document);
         assert entity_type != null;
+        Bundle temp = (Bundle) document.getStatementOrBundle().get(0);
         if (entity_type.equals(this.senderConnector)) {
+            if (!(this.document_done.contains(bundle_id))) {
+                retrieveMainActivity(temp);
+                this.document_done.add(bundle_id);
+            }
             this.precursors.add(entity_id);
+            this.done.add(entity_type);
         }
         if (entity_type.equals(this.receiverConnector)) {
-           getPrecursors(entity_id, resolve(entity_id,this.receiverConnector).get(2));
+            this.done.add(entity_id);
+            getPrecursors(entity_id, resolve(entity_id,this.receiverConnector).get(2));
         } else {
-            Bundle temp = (Bundle) document.getStatementOrBundle().get(0);
             for (Statement statement : temp.getStatement()) {
                 if (!(statement instanceof WasDerivedFrom derived))
                     continue;
@@ -144,6 +159,20 @@ public class Crawler {
             }
         }
         return false;
+    }
+
+    private void retrieveMainActivity (Bundle bundle) {
+        for (Statement statement : bundle.getStatement()) {
+            if (statement instanceof Activity activity) {
+                if (activity.getType().isEmpty())
+                    continue;
+                if (activity.getType().get(0).getValue().equals(this.mainActivity)) {
+                    List<QualifiedName> temp = new ArrayList<>();
+                    activity.getOther().forEach(x -> temp.add((QualifiedName) x.getValue()));
+                    this.activities.add(temp);
+                }
+            }
+        }
     }
 
 }

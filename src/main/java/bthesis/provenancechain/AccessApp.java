@@ -40,6 +40,19 @@ public class AccessApp {
                 crawler.getPrec().forEach(System.out::println);
                 crawler.cleanup();
                 System.out.println();
+            } else if (command.equalsIgnoreCase("previousact")) {
+                System.out.println("Enter entity ID ('prefix:{{uri}}local'): ");
+                String entity_id = scanner.nextLine();
+                System.out.println("Enter bundle ID ('prefix:{{uri}}local'): ");
+                String document_id = scanner.nextLine();
+                crawler.crawl(entity_id,document_id,0);
+                for (int i = 0; i <= crawler.getPrec().size(); i++) {
+                    System.out.println("Precursor:\n" + crawler.getPrec().get(i) + "\nActivities:");
+                    crawler.getActiv().get(i).forEach(System.out::println);
+                    System.out.println();
+                }
+                crawler.cleanup();
+                System.out.println();
             } else if (command.equalsIgnoreCase("next")) {
                 System.out.println("Enter entity ID ('prefix:{{uri}}local'): ");
                 String entity_id = scanner.nextLine();
