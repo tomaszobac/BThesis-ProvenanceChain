@@ -3,8 +3,10 @@ package bthesis.provenancechain;
 import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
 import java.util.List;
+import java.util.Map;
 import java.util.Scanner;
 import bthesis.metageneration.*;
+import org.openprovenance.prov.vanilla.ProvFactory;
 import org.openprovenance.prov.model.QualifiedName;
 
 public class AccessApp {
@@ -32,23 +34,16 @@ public class AccessApp {
             if (command.equalsIgnoreCase("exit")) {
                 break;
             } else if (command.equalsIgnoreCase("previous")) {
-                System.out.println("Enter entity ID ('prefix:{{uri}}local'): ");
-                String entity_id = scanner.nextLine();
-                System.out.println("Enter bundle ID ('prefix:{{uri}}local'): ");
-                String document_id = scanner.nextLine();
-                crawler.crawl(entity_id,document_id,0);
-                crawler.getPrec().forEach(System.out::println);
+                crawler.getPrecursors(createQN("entity"),createQN("bundle"),false);
+                crawler.getPrec().keySet().forEach(item -> System.out.println(item.get(0) + " from " + item.get(1)));
                 crawler.cleanup();
                 System.out.println();
             } else if (command.equalsIgnoreCase("previousact")) {
-                System.out.println("Enter entity ID ('prefix:{{uri}}local'): ");
-                String entity_id = scanner.nextLine();
-                System.out.println("Enter bundle ID ('prefix:{{uri}}local'): ");
-                String document_id = scanner.nextLine();
-                crawler.crawl(entity_id,document_id,0);
-                for (int i = 0; i <= crawler.getPrec().size(); i++) {
-                    System.out.println("Precursor:\n" + crawler.getPrec().get(i) + "\nActivities:");
-                    crawler.getActiv().get(i).forEach(System.out::println);
+                crawler.getPrecursors(createQN("entity"),createQN("bundle"),true);
+                for (Map.Entry<List<QualifiedName>, List<QualifiedName>> set : crawler.getPrec().entrySet()) {
+                    System.out.println("Precursor:\n" + set.getKey().get(0) + " from " + set.getKey().get(1));
+                    System.out.println("Activities:");
+                    set.getValue().forEach(System.out::println);
                     System.out.println();
                 }
                 crawler.cleanup();
@@ -58,8 +53,22 @@ public class AccessApp {
                 String entity_id = scanner.nextLine();
                 System.out.println("Enter bundle ID ('prefix:{{uri}}local'): ");
                 String document_id = scanner.nextLine();
-                crawler.crawl(entity_id,document_id,1);
-                crawler.getSucc().forEach(System.out::println);
+                //crawler.crawl(entity_id,document_id,1);
+                crawler.getSucc().keySet().forEach(System.out::println);
+                crawler.cleanup();
+                System.out.println();
+            } else if (command.equalsIgnoreCase("nextact")) {
+                System.out.println("Enter entity ID ('prefix:{{uri}}local'): ");
+                String entity_id = scanner.nextLine();
+                System.out.println("Enter bundle ID ('prefix:{{uri}}local'): ");
+                String document_id = scanner.nextLine();
+                //crawler.crawl(entity_id,document_id,1);
+                for (Map.Entry<QualifiedName, List<QualifiedName>> set : crawler.getSucc().entrySet()) {
+                    System.out.println("Successors:\n" + set.getKey());
+                    System.out.println("Activities:");
+                    set.getValue().forEach(System.out::println);
+                    System.out.println();
+                }
                 crawler.cleanup();
                 System.out.println();
             } else if (command.equalsIgnoreCase("resolve")) {
@@ -101,5 +110,17 @@ public class AccessApp {
 
         scanner.close();
         System.out.println("Exiting the program.");
+    }
+
+    private static QualifiedName createQN(String subject) {
+        Scanner scanner = new Scanner(System.in);
+        ProvFactory provFactory = new ProvFactory();
+
+        System.out.println("Enter " + subject + " ID: ");
+        String local = scanner.nextLine();
+        System.out.println("Enter " + subject + " URI: ");
+        String namespace = scanner.nextLine();
+
+        return provFactory.newQualifiedName(namespace,local,null);
     }
 }

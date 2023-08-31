@@ -15,6 +15,8 @@ public class TooManyDocuments {
         InteropFramework intF = new InteropFramework();
         this.path = Path.of(file.getAbsolutePath());
         this.document = intF.readDocumentFromFile(file.getAbsolutePath());
+        this.md5 = "";
+        this.sha256 = "";
     }
 
     public Document getDocument() {

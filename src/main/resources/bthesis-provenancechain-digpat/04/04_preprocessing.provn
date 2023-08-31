@@ -13,7 +13,7 @@ document
     agent(ns_RDC:pathologyDepartment, [prov:type='cpm:senderAgent', cpm:contactIdPid=""])
     agent(ns_RDC:researchDataCenter, [prov:type='cpm:receiverAgent', cpm:contactIdPid=""])
     activity(ns_RDC:receipt, -, -, [prov:type='cpm:receiptActivity'])
-    activity(ns_RDC:preprocessing, -, -, [prov:type='cpm:mainActivity', dct:hasPart='ns_RDC:tilesGeneration', dct:hasPart2='ns_RDC:datasetSplit'])
+    activity(ns_RDC:preprocessing, -, -, [prov:type='cpm:mainActivity', prov:type='cpm:dataHandling', dct:hasPart='ns_RDC:tilesGeneration', dct:hasPart='ns_RDC:datasetSplit'])
     entity(ns_RDC:WSI_data, [prov:type='cpm:externalInputConnector', cpm:currentBundle='ns_RDC:04_preprocessing.provn'])
     entity(ns_RDC:WSI_data-b, [cpm:externalId="wsi-id-1"])
     entity(ns_RDC:tilesBatch1, [cpm:externalId="batch-id-1"])

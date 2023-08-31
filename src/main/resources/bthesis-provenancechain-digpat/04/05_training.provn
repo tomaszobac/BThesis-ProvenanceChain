@@ -10,7 +10,7 @@ document
     agent(ns_RDC:researchDataCenter, [prov:type='cpm:senderAgent', cpm:contactIdPid=""])
     entity(ns_RDC:trainDataset, [prov:type='cpm:externalInputConnector', cpm:currentBundle='ns_RDC:05_training.provn'])
     activity(ns_RDC:receipt, -, -, [prov:type='cpm:receiptActivity'])
-    activity(ns_RDC:trainingMain, -, -, [dct:hasPart='ns_RDC:training', dct:hasPart2='ns_RDC:validation', prov:type='cpm:mainActivity'])
+    activity(ns_RDC:trainingMain, -, -, [dct:hasPart='ns_RDC:training', prov:type='cpm:dataHandling', dct:hasPart='ns_RDC:validation', prov:type='cpm:mainActivity'])
     entity(ns_RDC:trainedModelConnector, [prov:type='cpm:senderConnector', cpm:receiverBundleId='ns_RDC:06_evaluation.provn', cpm:receiverServiceUri="#URI#"])
     agent(ns_RDC:researchDataCenter, [prov:type='cpm:receiverAgent', cpm:contactIdPid=""])
     wasAttributedTo(ns_RDC:trainDatasetConnector, ns_RDC:researchDataCenter)

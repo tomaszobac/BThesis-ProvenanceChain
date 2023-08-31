@@ -14,7 +14,7 @@ document
     entity(ns_biobabank:diagnosis_WSI_data, [prov:type='cpm:externalInputConnector', cpm:currentBundle='ns_biobabank:03_biobanking.provn'])
     agent(ns_biobabank:pathologyDepartment, [prov:type='cpm:senderAgent', cpm:contactIdPid=""])
     activity(ns_biobabank:receipt, -, -, [prov:type='cpm:receiptActivity'])
-    activity(ns_biobabank:storage, -, -, [prov:type='cpm:mainActivity', dct:hasPart='ns_biobabank:registration', dct:hasPart='ns_biobabank:labelling', dct:hasPart='ns_biobabank:storage-b'])
+    activity(ns_biobabank:storage, -, -, [prov:type='cpm:mainActivity', prov:type='cpm:sampleHandling', prov:type='cpm:sampleStorage', dct:hasPart='ns_biobabank:registration', dct:hasPart='ns_biobabank:labelling', dct:hasPart='ns_biobabank:storage-b'])
     used(ns_biobabank:receipt, ns_pathology:slidesCollectionConnector, -)
     wasInvalidatedBy(ns_pathology:slidesCollectionConnector, ns_biobabank:receipt, -)
     wasAttributedTo(ns_pathology:slidesCollectionConnector, ns_biobabank:pathologyDepartment)

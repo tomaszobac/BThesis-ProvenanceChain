@@ -1,21 +1,18 @@
 package bthesis.metageneration;
 
-import org.openprovenance.prov.interop.InteropFramework;
-import org.openprovenance.prov.model.Document;
-
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
 public class SystemFileLoader implements FileLoader{
-    List<File> Files;
+    List<File> files;
 
     public List<File> getFiles() {
-        return Files;
+        return files;
     }
 
     public SystemFileLoader(String path) {
-        Files = loadFiles(path);
+        files = loadFiles(path);
     }
 
     @Override

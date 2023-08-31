@@ -11,7 +11,7 @@ document
     entity(ns_surgery:sampleConnector, [prov:type='cpm:senderConnector', cpm:receiverBundleId='ns_pathology:02_scanning.provn', cpm:receiverServiceUri="#URI#"])
     agent(ns_surgery:pathologyDepartment, [prov:type='cpm:receiverAgent', cpm:contactIdPid=""])
     entity(ns_surgery:externalInput, [prov:type='cpm:externalInputConnector', cpm:currentBundle='ns_surgery:01_sample_acquisition.provn'])
-    activity(ns_surgery:sampleAcquisition, -, -, [prov:type='cpm:mainActivity', dct:hasPart='ns_surgery:biomaterialCollection', dct:hasPart='ns_surgery:samplePreparation', dct:hasPart='ns_surgery:sampleTransport'])
+    activity(ns_surgery:sampleAcquisition, -, -, [prov:type='cpm:mainActivity', prov:type='cpm:sampleAcquisition', prov:type='cpm:sampleHandling', dct:hasPart='ns_surgery:biomaterialCollection', dct:hasPart='ns_surgery:samplePreparation', dct:hasPart='ns_surgery:sampleTransport'])
     wasGeneratedBy(ns_surgery:sampleConnector, ns_surgery:sampleAcquisition, -)
     wasAttributedTo(ns_surgery:sampleConnector, ns_surgery:pathologyDepartment)
     used(ns_surgery:sampleAcquisition, ns_surgery:externalInput, -)

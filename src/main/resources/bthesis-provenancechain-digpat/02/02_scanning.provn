@@ -19,7 +19,7 @@ document
     agent(ns_pathology:biobank, [prov:type='cpm:receiverAgent', cpm:contactIdPid=""])
     agent(ns_pathology:researchDataCenter, [prov:type='cpm:receiverAgent', cpm:contactIdPid=""])
     activity(ns_pathology:receipt, -, -, [prov:type='cpm:receiptActivity'])
-    activity(ns_pathology:dataGeneration, -, -, [prov:type='cpm:mainActivity', dct:hasPart='ns_pathology:macroscopy', dct:hasPart='ns_pathology:slicing', dct:hasPart='ns_pathology:staining', dct:hasPart='ns_pathology:scanning', dct:hasPart='ns_pathology:examination'])
+    activity(ns_pathology:dataGeneration, -, -, [prov:type='cpm:mainActivity', prov:type='cpm:sampleHandling', prov:type='cpm:dataGeneration', dct:hasPart='ns_pathology:macroscopy', dct:hasPart='ns_pathology:slicing', dct:hasPart='ns_pathology:staining', dct:hasPart='ns_pathology:scanning', dct:hasPart='ns_pathology:examination'])
     wasAttributedTo(ns_surgery:sampleConnector, ns_pathology:surgicalDepartment)
     used(ns_pathology:receipt, ns_surgery:sampleConnector, -)
     wasInvalidatedBy(ns_surgery:sampleConnector, ns_pathology:receipt, -)

@@ -1,7 +1,7 @@
 package bthesis;
 
 import org.openprovenance.prov.model.*;
-import org.openprovenance.prov.xml.ProvFactory;
+import org.openprovenance.prov.vanilla.ProvFactory;
 import org.openprovenance.prov.interop.InteropFramework;
 
 import javax.xml.namespace.QName;
@@ -9,14 +9,16 @@ import javax.xml.namespace.QName;
 public class test {
     public static void main(String[] args) {
         String provNFile = "src/main/resources/bthesis-provenancechain-digpat/01/01_sample_acquisition.provn";
+        final String ANSI_GREEN = "\u001B[32m";
+        final String ANSI_RESET = "\u001B[0m";
 
         ProvFactory provFactory = new ProvFactory();
         InteropFramework intF=new InteropFramework();
         Document document = intF.readDocumentFromFile(provNFile);
         //Document document = intF.readDocument("https://gitlab.ics.muni.cz/396340/bthesis-provenancechain-digpat/-/raw/master/01/01_sample_acquisition.provn");
 
-        //IndexedDocument indexedDocument = new IndexedDocument(provFactory,document);
-        //System.out.println("ID type: " + indexedDocument.getEntity(qualifiedName).getType());
+        IndexedDocument indexedDocument = new IndexedDocument(provFactory,document);
+        System.out.println("ID type: " + indexedDocument.getEntity("externalInput").getType());
         /*org.openprovenance.prov.model.Attribute attribute = indexedDocument.getEntity("sampleConnector").getType().get(0);
         System.out.println("ID type: " + attribute.getValue());*/
 
@@ -32,9 +34,9 @@ public class test {
             else if (statement instanceof Activity) {
                 Activity activity = (Activity) statement;
                 System.out.println("Activity class: " + activity.getType().get(0).getValue().getClass());
-                QualifiedName mainActivity = new org.openprovenance.prov.vanilla.QualifiedName("cpm_uri", "mainActivity","cpm");
+                QualifiedName mainActivity = provFactory.newQualifiedName("cpm_uri", "mainActivity","cpm");
                 QualifiedName mainActivity2 = new org.openprovenance.prov.vanilla.QualifiedName("cpm_uri", "mainActivity","");
-                System.out.println("test equals: " + mainActivity.equals(mainActivity2));
+                System.out.println("test equals: " + ANSI_GREEN + mainActivity.equals(mainActivity2) + ANSI_RESET);
                 activity.getOther().forEach(x -> System.out.println(x.getValue() + " + " + x.getValue().getClass()));
             }
             else if (statement instanceof Entity) {
