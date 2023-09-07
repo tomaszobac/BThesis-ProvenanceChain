@@ -8,11 +8,13 @@ import java.util.Scanner;
 
 public class AccessApp {
 
-    private static void generateRuntime(String input, String output) throws IOException, NoSuchAlgorithmException {
+    private static void generateRuntime(String input, String output) throws NoSuchAlgorithmException {
         SystemFileLoader inputFileLoader = new SystemFileLoader(input);
 
-        MetaGeneration generation = new MetaGeneration(inputFileLoader.getFiles());
-        Document document = generation.generate();
+        HashDocument hasher = new HashDocument();
+        MetaBuilder meta = new MetaBuilder();
+        MetaGeneration generation = new MetaGeneration();
+        Document document = generation.generate(hasher, meta, inputFileLoader.getFiles());
 
         WriteDocument outputWriter = new WriteDocument(output, document);
         outputWriter.writeDocument();

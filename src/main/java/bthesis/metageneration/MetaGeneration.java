@@ -8,32 +8,20 @@ import java.util.List;
 import java.io.File;
 
 public class MetaGeneration {
-    List<TooManyDocuments> documents;
+    List<DocInfoExtender> documents;
 
-    public MetaGeneration(List<File> files) {
+    public MetaGeneration() {
         this.documents = new ArrayList<>();
-        setDocuments(files);
     }
 
-    public MetaGeneration(File file) {
-        this.documents = new ArrayList<>();
-        this.documents.add(new TooManyDocuments(file));
-    }
-
-    public void setDocuments(List<File> files) {
-        for (File file : files) {
-            this.documents.add(new TooManyDocuments(file));
-        }
-    }
-
-    public List<TooManyDocuments> getDocuments() {
+    public List<DocInfoExtender> getDocuments() {
         return documents;
     }
 
-    public Document generate() throws IOException, NoSuchAlgorithmException {
-        HashDocument hasher = new HashDocument();
-        hasher.addHashes(getDocuments());
-        MetaBuilder meta = new MetaBuilder();
+    public Document generate(HashDocument hasher, MetaBuilder meta, List<File> files) throws NoSuchAlgorithmException {
+        for (File file : files) {
+            this.documents.add(new DocInfoExtender(hasher, file));
+        }
         return meta.makeDocument(getDocuments());
     }
 

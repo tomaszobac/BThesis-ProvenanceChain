@@ -1,110 +1,42 @@
 package bthesis.provenancechain;
 
-import java.io.IOException;
-import java.security.NoSuchAlgorithmException;
 import java.util.List;
-import java.util.Map;
+import java.util.Arrays;
 import java.util.Scanner;
+import java.io.IOException;
+import java.util.ArrayList;
 import bthesis.metageneration.*;
-import org.openprovenance.prov.vanilla.ProvFactory;
+import java.security.NoSuchAlgorithmException;
 import org.openprovenance.prov.model.QualifiedName;
+import org.openprovenance.prov.vanilla.ProvFactory;
 
 public class AccessApp {
     public static void main(String[] args) throws IOException, NoSuchAlgorithmException, InterruptedException {
         String path = "src/main/resources/bthesis-provenancechain-digpat";
         SystemFileLoader inputFileLoader = new SystemFileLoader(path);
-        Initializer initializer = new Initializer(inputFileLoader.getFiles());
+        HashDocument hasher = new HashDocument();
+        MetaBuilder meta = new MetaBuilder();
+        Initializer initializer = new Initializer(hasher, meta, inputFileLoader.getFiles());
         Crawler crawler = new Crawler(initializer);
-
         Scanner scanner = new Scanner(System.in);
+        boolean run = true;
 
-        System.out.print(".\r");
-        Thread.sleep(500);
-        System.out.print("..\r");
-        Thread.sleep(500);
-        System.out.print("...\r");
-        Thread.sleep(750);
-        System.out.println("Data initialized");
-        Thread.sleep(500);
-        System.out.println("Enter a command (or 'exit' to quit): ");
-        while (true) {
+        fakeLoading();
+
+        while (run) {
             System.out.print("$> ");
             String command = scanner.nextLine();
 
-            if (command.equalsIgnoreCase("exit")) {
-                break;
-            } else if (command.equalsIgnoreCase("previous")) {
-                crawler.getPrecursors(createQN("entity"),createQN("bundle"),false);
-                crawler.getPrec().keySet().forEach(item -> System.out.println(item.get(0) + " from " + item.get(1)));
-                crawler.cleanup();
-                System.out.println();
-            } else if (command.equalsIgnoreCase("previousact")) {
-                crawler.getPrecursors(createQN("entity"),createQN("bundle"),true);
-                for (Map.Entry<List<QualifiedName>, List<QualifiedName>> set : crawler.getPrec().entrySet()) {
-                    System.out.println("Precursor:\n" + set.getKey().get(0) + " from " + set.getKey().get(1));
-                    System.out.println("Activities:");
-                    set.getValue().forEach(System.out::println);
-                    System.out.println();
-                }
-                crawler.cleanup();
-                System.out.println();
-            } else if (command.equalsIgnoreCase("next")) {
-                System.out.println("Enter entity ID ('prefix:{{uri}}local'): ");
-                String entity_id = scanner.nextLine();
-                System.out.println("Enter bundle ID ('prefix:{{uri}}local'): ");
-                String document_id = scanner.nextLine();
-                //crawler.crawl(entity_id,document_id,1);
-                crawler.getSucc().keySet().forEach(System.out::println);
-                crawler.cleanup();
-                System.out.println();
-            } else if (command.equalsIgnoreCase("nextact")) {
-                System.out.println("Enter entity ID ('prefix:{{uri}}local'): ");
-                String entity_id = scanner.nextLine();
-                System.out.println("Enter bundle ID ('prefix:{{uri}}local'): ");
-                String document_id = scanner.nextLine();
-                //crawler.crawl(entity_id,document_id,1);
-                for (Map.Entry<QualifiedName, List<QualifiedName>> set : crawler.getSucc().entrySet()) {
-                    System.out.println("Successors:\n" + set.getKey());
-                    System.out.println("Activities:");
-                    set.getValue().forEach(System.out::println);
-                    System.out.println();
-                }
-                crawler.cleanup();
-                System.out.println();
-            } else if (command.equalsIgnoreCase("resolve")) {
-                System.out.println("Enter entity ID ('prefix:{{uri}}local'): ");
-                String id = scanner.nextLine();
-                for (List<QualifiedName> row : initializer.getMemory().getNavigation_table()) {
-                    if (row.get(0).toString().equals(id)) {
-                        System.out.println(row);
-                    }
-                }
-                System.out.println();
-            } else if (command.equalsIgnoreCase("get")) {
-                break;
-            } else if (command.equalsIgnoreCase("help")) {
-                System.out.println("previous - get entity precursors");
-                System.out.println();
-                System.out.println("next - get entity successors");
-                System.out.println();
-                System.out.println("resolve - get table contents for entity");
-                System.out.println();
-                System.out.println("get - get bundle contents");
-                System.out.println();
-                System.out.println("list - get table");
-                System.out.println();
-                System.out.println("help - show this");
-                System.out.println();
-                System.out.println("exit - exit the program");
-                System.out.println();
-            } else if (command.equalsIgnoreCase("list")) {
-                for (List<QualifiedName> row : initializer.getMemory().getNavigation_table()) {
-                    System.out.println(row);
-                }
-                System.out.println();
-            } else {
-                System.out.println("Unknown command");
-                System.out.println();
+            switch (command) {
+                case "exit" -> run = false;
+                case "previous" -> findPrecursors(crawler, false);
+                case "previousact" -> findPrecursors(crawler, true);
+                case "next" -> findSuccessors(crawler, false);
+                case "nextact" -> findSuccessors(crawler, true);
+                case "resolve" -> resolve(scanner, initializer);
+                case "help" -> help();
+                case "list" -> initializer.getMemory().getNavigation_table().forEach(System.out::println);
+                default -> System.out.println("Unknown command\n");
             }
         }
 
@@ -122,5 +54,71 @@ public class AccessApp {
         String namespace = scanner.nextLine();
 
         return provFactory.newQualifiedName(namespace,local,null);
+    }
+
+    private static void findPrecursors(Crawler crawler, boolean find_activity) {
+        crawler.getPrecursors(createQN("entity"),createQN("bundle"),find_activity);
+        if (find_activity) {
+            for (ProvenanceNode node : crawler.getNodes()) {
+                System.out.println("Precursor:\n" + node.getConnector() + " from " + node.getBundle());
+                System.out.println("Activities:");
+                node.getActivities().forEach(System.out::println);
+                System.out.println();
+            }
+        }
+        else crawler.getNodes().forEach(item -> System.out.println(item.getConnector() + " from " + item.getBundle()));
+        crawler.cleanup();
+    }
+
+    private static void findSuccessors(Crawler crawler, boolean find_activity) {
+        crawler.getSuccessors(createQN("entity"),createQN("bundle"),find_activity);
+        if (find_activity) {
+            for (ProvenanceNode node : crawler.getNodes()) {
+                System.out.println("Successor:\n" + node.getConnector() + " from " + node.getBundle());
+                System.out.println("Activities:");
+                node.getActivities().forEach(System.out::println);
+                System.out.println();
+            }
+        }
+        else crawler.getNodes().forEach(item -> System.out.println(item.getConnector() + " from " + item.getBundle()));
+        crawler.cleanup();
+    }
+
+    private static void help() {
+        List<String> help = new ArrayList<>(Arrays.asList(
+                "previous - get entity precursors",
+                "previousact - get entity precursors and their activities",
+                "next - get entity successors",
+                "nextact - get entity precursors and their activities",
+                "resolve - get table contents for entity",
+                "get - get bundle contents",
+                "list - get table",
+                "help - show this",
+                "exit - exit the program"
+                ));
+        help.forEach(it -> System.out.println(it+"\n"));
+    }
+
+    private static void fakeLoading() throws InterruptedException {
+        System.out.print(".\r");
+        Thread.sleep(500);
+        System.out.print("..\r");
+        Thread.sleep(500);
+        System.out.print("...\r");
+        Thread.sleep(750);
+        System.out.println("Data initialized");
+        Thread.sleep(500);
+        System.out.println("Enter a command (or 'exit' to quit): ");
+    }
+
+    private static void resolve(Scanner scanner, Initializer initializer) {
+        System.out.println("Enter entity ID ('prefix:{{uri}}local'): ");
+        String id = scanner.nextLine();
+        for (List<QualifiedName> row : initializer.getMemory().getNavigation_table()) {
+            if (row.get(0).toString().equals(id)) {
+                System.out.println(row);
+            }
+        }
+        System.out.println();
     }
 }

@@ -8,7 +8,7 @@ import javax.xml.namespace.QName;
 
 public class test {
     public static void main(String[] args) {
-        String provNFile = "src/main/resources/bthesis-provenancechain-digpat/01/01_sample_acquisition.provn";
+        String provNFile = "src/main/resources/meta_provenance.provn";
         final String ANSI_GREEN = "\u001B[32m";
         final String ANSI_RESET = "\u001B[0m";
 
@@ -18,7 +18,8 @@ public class test {
         //Document document = intF.readDocument("https://gitlab.ics.muni.cz/396340/bthesis-provenancechain-digpat/-/raw/master/01/01_sample_acquisition.provn");
 
         IndexedDocument indexedDocument = new IndexedDocument(provFactory,document);
-        System.out.println("ID type: " + indexedDocument.getEntity("externalInput").getType());
+        System.out.println("full doc: " + document.toString());
+        //System.out.println("ID type: " + indexedDocument.getEntity("externalInput").getType());
         /*org.openprovenance.prov.model.Attribute attribute = indexedDocument.getEntity("sampleConnector").getType().get(0);
         System.out.println("ID type: " + attribute.getValue());*/
 
@@ -44,6 +45,8 @@ public class test {
                 System.out.println("Entity operations:");
                 System.out.println("entity ID: " + entity.getId());
                 System.out.println("entity type: " + entity.getType());
+                if (entity.getOther().isEmpty()) continue;
+                System.out.println("entity type: " + entity.getOther().get(0).getValue());
                 /*if (entity.getType().get(0).getValue().toString().equals("'cpm:{{cpm_uri}}senderConnector'")){
                     QualifiedName qn = (QualifiedName) entity.getType().get(0).getValue();
                     System.out.println("True");

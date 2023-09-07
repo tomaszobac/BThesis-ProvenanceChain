@@ -18,7 +18,7 @@ public class MetaBuilder {
         this.namespace.addKnownNamespaces();
     }
 
-    public Document makeDocument(List<TooManyDocuments> resources) {
+    public Document makeDocument(List<DocInfoExtender> resources) {
         Map<Statement, Statement> statements = new LinkedHashMap<>();
         List<Statement> specialization = new ArrayList<>();
 
@@ -28,7 +28,7 @@ public class MetaBuilder {
         namespace.register("meta", "META_URI");
         namespace.register("hash", "HASH_URI");
 
-        for (TooManyDocuments resource : resources) {
+        for (DocInfoExtender resource : resources) {
             Bundle bundle = (Bundle) resource.getDocument().getStatementOrBundle().get(0);
             namespace.register(bundle.getId().getPrefix(), bundle.getId().getNamespaceURI());
             Entity bundletemp = pFactory.newEntity(namespace.qualifiedName(bundle.getId().getPrefix(),"abstact_" + bundle.getId().getLocalPart(),pFactory));
