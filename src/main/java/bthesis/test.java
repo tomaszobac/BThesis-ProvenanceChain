@@ -1,16 +1,17 @@
 package bthesis;
 
+import org.openprovenance.prov.interop.Formats;
 import org.openprovenance.prov.model.*;
 import org.openprovenance.prov.vanilla.ProvFactory;
 import org.openprovenance.prov.interop.InteropFramework;
 
 import javax.xml.namespace.QName;
+import java.io.ByteArrayOutputStream;
+import java.util.Arrays;
 
 public class test {
     public static void main(String[] args) {
-        String provNFile = "src/main/resources/meta_provenance.provn";
-        final String ANSI_GREEN = "\u001B[32m";
-        final String ANSI_RESET = "\u001B[0m";
+        String provNFile = "src/main/resources/bthesis-provenancechain-digpat/01/01_sample_acquisition.provn";
 
         ProvFactory provFactory = new ProvFactory();
         InteropFramework intF=new InteropFramework();
@@ -18,6 +19,10 @@ public class test {
         //Document document = intF.readDocument("https://gitlab.ics.muni.cz/396340/bthesis-provenancechain-digpat/-/raw/master/01/01_sample_acquisition.provn");
 
         IndexedDocument indexedDocument = new IndexedDocument(provFactory,document);
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        intF.writeDocument(baos, Formats.ProvFormat.PROVN, document);
+        byte[] byteArray = baos.toByteArray();
+        System.out.println(colortest());
         System.out.println("full doc: " + document.toString());
         //System.out.println("ID type: " + indexedDocument.getEntity("externalInput").getType());
         /*org.openprovenance.prov.model.Attribute attribute = indexedDocument.getEntity("sampleConnector").getType().get(0);
@@ -37,7 +42,6 @@ public class test {
                 System.out.println("Activity class: " + activity.getType().get(0).getValue().getClass());
                 QualifiedName mainActivity = provFactory.newQualifiedName("cpm_uri", "mainActivity","cpm");
                 QualifiedName mainActivity2 = new org.openprovenance.prov.vanilla.QualifiedName("cpm_uri", "mainActivity","");
-                System.out.println("test equals: " + ANSI_GREEN + mainActivity.equals(mainActivity2) + ANSI_RESET);
                 activity.getOther().forEach(x -> System.out.println(x.getValue() + " + " + x.getValue().getClass()));
             }
             else if (statement instanceof Entity) {
@@ -94,5 +98,12 @@ public class test {
         System.out.println("Bundle Statement: " + bundle.getStatement()); //celý file (není stejný jako origo)
         System.out.println();
         System.out.println(file.getName()); //test.provn*/
+    }
+
+    public static String colortest() {
+        final String ANSI_GREEN = "\u001B[32m";
+        final String ANSI_RESET = "\u001B[0m";
+
+        return ANSI_GREEN+"test"+ANSI_RESET;
     }
 }

@@ -1,29 +1,16 @@
 package bthesis.provenancechain;
 
-import org.openprovenance.prov.model.QualifiedName;
-
 import java.util.List;
 
-public class ProvenanceNode {
-    private final QualifiedName connector;
-    private final QualifiedName bundle;
-    private final List<QualifiedName> activities;
+import org.openprovenance.prov.model.QualifiedName;
 
-    public ProvenanceNode(QualifiedName connector, QualifiedName bundle, List<QualifiedName> activities) {
-        this.connector = connector;
-        this.bundle = bundle;
-        this.activities = activities;
-    }
-
-    public QualifiedName getConnector() {
-        return connector;
-    }
-
-    public QualifiedName getBundle() {
-        return bundle;
-    }
-
-    public List<QualifiedName> getActivities() {
-        return activities;
-    }
+/**
+ * The ProvenanceNode record represents a node in the provenance graph.
+ * It contains information about the connector, the bundle where it is located,
+ * any related activities, and a checksum for verification.
+ *
+ * @author Tomas Zobac
+ */
+public record ProvenanceNode(QualifiedName connector, QualifiedName bundle, List<QualifiedName> activities,
+                             String checksum) {
 }
