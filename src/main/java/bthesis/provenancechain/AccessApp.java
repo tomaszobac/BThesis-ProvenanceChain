@@ -6,6 +6,14 @@ import java.util.Scanner;
 import java.util.ArrayList;
 import java.security.NoSuchAlgorithmException;
 
+import org.jline.terminal.Terminal;
+import org.jline.terminal.TerminalBuilder;
+import org.jline.reader.LineReader;
+import org.jline.reader.LineReaderBuilder;
+import org.jline.reader.impl.DefaultParser;
+import org.jline.reader.EndOfFileException;
+import org.jline.reader.impl.completer.StringsCompleter;
+
 import org.openprovenance.prov.model.QualifiedName;
 import org.openprovenance.prov.vanilla.ProvFactory;
 
@@ -39,22 +47,37 @@ public class AccessApp {
         Scanner scanner = new Scanner(System.in);
         boolean run = true;
 
-        System.out.println("\nEnter a command (or 'exit' to quit): ");
-        while (run) {
-            System.out.print("$> ");
-            String command = scanner.nextLine();
+        try {
+            Terminal terminal = TerminalBuilder.builder().build();
+            LineReader reader = LineReaderBuilder.builder()
+                    .terminal(terminal)
+                    .parser(new DefaultParser())
+                    .completer(new StringsCompleter("exit", "precursors", "precursors-activity", "successors",
+                            "successors-activity", "resolve", "help", "list"))
+                    .build();
+            String prompt = "$> ";
 
-            switch (command) {
-                case "exit" -> run = false;
-                case "previous" -> findPrecursors(crawler, false, hasher);
-                case "previousact" -> findPrecursors(crawler, true, hasher);
-                case "next" -> findSuccessors(crawler, false, hasher);
-                case "nextact" -> findSuccessors(crawler, true, hasher);
-                case "resolve" -> resolve(scanner, initializer);
-                case "help" -> help();
-                case "list" -> initializer.getMemory().getNavigation_table().forEach(System.out::println);
-                default -> System.out.println("Unknown command\n");
+            System.out.println("\nEnter a command (or 'exit' to quit): ");
+            while (run) {
+                try {
+                    String line = reader.readLine(prompt);
+                    switch (line) {
+                        case "exit" -> run = false;
+                        case "precursors" -> findPrecursors(crawler, false, hasher);
+                        case "precursors-activity" -> findPrecursors(crawler, true, hasher);
+                        case "successors" -> findSuccessors(crawler, false, hasher);
+                        case "successors-activity" -> findSuccessors(crawler, true, hasher);
+                        case "resolve" -> resolve(scanner, initializer);
+                        case "help" -> help();
+                        case "list" -> initializer.getMemory().getNavigation_table().forEach(System.out::println);
+                        default -> System.out.println("Unknown command\n");
+                    }
+                } catch (EndOfFileException e) {
+                    return;
+                }
             }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
 
         scanner.close();
@@ -92,7 +115,7 @@ public class AccessApp {
         if (find_activity) {
             for (ProvenanceNode node : crawler.getNodes()) {
                 System.out.println("Precursor:\n" + node.connector() + " from " + node.bundle());
-                System.out.println("Activities:\n" + node.checksum());
+                System.out.println("Checksum:\n" + node.checksum());
                 System.out.println("Activities:");
                 node.activities().forEach(System.out::println);
                 System.out.println();
@@ -116,7 +139,7 @@ public class AccessApp {
         if (find_activity) {
             for (ProvenanceNode node : crawler.getNodes()) {
                 System.out.println("Successor:\n" + node.connector() + " from " + node.bundle());
-                System.out.println("Activities:\n" + node.checksum());
+                System.out.println("Checksum:\n" + node.checksum());
                 System.out.println("Activities:");
                 node.activities().forEach(System.out::println);
                 System.out.println();
