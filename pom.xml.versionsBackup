@@ -11,7 +11,7 @@
     <properties>
         <maven.compiler.source>17</maven.compiler.source>
         <maven.compiler.target>17</maven.compiler.target>
-        <prov.model.version>2.0.3</prov.model.version>
+        <prov.model.version>2.0.0</prov.model.version>
         <prov.interopl.version>1.0.0</prov.interopl.version>
         <jline.version>3.23.0</jline.version>
         <jansi.version>2.4.0</jansi.version>
@@ -63,4 +63,5 @@
             </plugin>
         </plugins>
     </build>
+
 </project>

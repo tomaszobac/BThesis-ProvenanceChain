@@ -97,7 +97,7 @@ public class test {
         System.out.println();
         System.out.println("Bundle Statement: " + bundle.getStatement()); //celý file (není stejný jako origo)
         System.out.println();
-        System.out.println(file.getName()); //test.provn*/
+        System.out.println(file.getName()); //canon-test.provn*/
     }
 
     public static String colortest() {

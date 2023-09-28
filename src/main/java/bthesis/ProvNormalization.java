@@ -26,8 +26,8 @@ public class ProvNormalization {
     }
 
     public static void main(String[] args) {
-        String provNFilePath = "src/main/resources/test.provn";
-        String fileout = "target/test.provn";
+        String provNFilePath = "src/main/resources/canon-test.provn";
+        String fileout = "target/canon-test.provn";
 
         ProvNormalization tutorial=new ProvNormalization(InteropFramework.getDefaultFactory());
 
