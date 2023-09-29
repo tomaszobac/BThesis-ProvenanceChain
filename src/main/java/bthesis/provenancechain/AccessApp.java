@@ -126,6 +126,7 @@ public class AccessApp {
         System.out.println("Enter " + subject + " URI: ");
         String namespace = scanner.nextLine();
 
+        if ((namespace.isBlank() || local.isBlank())) return null;
         return provFactory.newQualifiedName(namespace, local, null);
     }
 
@@ -136,7 +137,15 @@ public class AccessApp {
      * @throws NoSuchAlgorithmException if the algorithm used for hashing is not found.
      */
     private static void findPrecursors(boolean find_activity) throws NoSuchAlgorithmException {
-        crawler.getPrecursors(createQN("entity"), createQN("bundle"), find_activity, hasher);
+        QualifiedName entity = createQN("entity");
+        QualifiedName bundle = createQN("bundle");
+        if (entity == null || bundle == null) {
+            System.out.println("All values must be specified");
+            return;
+        }
+
+        crawler.getPrecursors(entity, bundle, find_activity, hasher);
+
         System.out.println();
         if (find_activity) {
             for (ProvenanceNode node : crawler.getNodes()) {
@@ -159,7 +168,14 @@ public class AccessApp {
      * @throws NoSuchAlgorithmException if the algorithm used for hashing is not found.
      */
     private static void findSuccessors(boolean find_activity) throws NoSuchAlgorithmException {
-        crawler.getSuccessors(createQN("entity"), createQN("bundle"), find_activity, hasher);
+        QualifiedName entity = createQN("entity");
+        QualifiedName bundle = createQN("bundle");
+        if (entity == null || bundle == null) {
+            System.out.println("All values must be specified");
+            return;
+        }
+
+        crawler.getSuccessors(entity, bundle, find_activity, hasher);
         System.out.println();
         if (find_activity) {
             for (ProvenanceNode node : crawler.getNodes()) {
