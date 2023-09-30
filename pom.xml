@@ -11,19 +11,20 @@
     <properties>
         <maven.compiler.source>17</maven.compiler.source>
         <maven.compiler.target>17</maven.compiler.target>
-        <openprovenance.version>0.9.31</openprovenance.version>
+        <prov.model.version>2.0.0</prov.model.version>
+        <prov.interopl.version>1.0.0</prov.interopl.version>
     </properties>
 
     <dependencies>
         <dependency>
             <groupId>org.openprovenance.prov</groupId>
             <artifactId>prov-model</artifactId>
-            <version>${openprovenance.version}</version>
+            <version>${prov.model.version}</version>
         </dependency>
         <dependency>
             <groupId>org.openprovenance.prov</groupId>
             <artifactId>prov-interop-light</artifactId>
-            <version>${openprovenance.version}</version>
+            <version>${prov.interopl.version}</version>
         </dependency>
     </dependencies>
     <build>
