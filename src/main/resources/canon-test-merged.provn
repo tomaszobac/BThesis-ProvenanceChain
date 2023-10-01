@@ -1,0 +1,4 @@
+document
+prefix ns_surgery <https://gitlab.ics.muni.cz/396340/bthesis-provenancechain-digpat/-/tree/master/01/>
+entity(ns_surgery:sampleConnector,[prov:type = "cmp:receiverConnector" %% xsd:string, prov:label = "LABEL"])
+endDocument

@@ -1,48 +1,50 @@
 package bthesis;
 
-import org.openprovenance.prov.interop.InteropFramework;
-import org.openprovenance.prov.model.Document;
-import org.openprovenance.prov.model.Namespace;
-import org.openprovenance.prov.model.ProvFactory;
-import org.openprovenance.prov.model.StatementOrBundle;
+import org.openprovenance.prov.model.*;
+import org.openprovenance.prov.vanilla.ProvFactory;
 
-import java.util.List;
+public class MergeProvDocs {
+    ProvFactory pFactory = ProvFactory.getFactory();
 
-public class ProvNormalization {
-    public static final String PROVBOOK_NS = "http://www.provbook.org";
-    public static final String PROVBOOK_PREFIX = "provbook";
+    public Document mergeDocuments(Document doc1, Document doc2) {
+        // Create a new document for the merged result
+        Document mergedDoc = pFactory.newDocument();
 
-    public static final String JIM_PREFIX = "jim";
-    public static final String JIM_NS = "http://www.cs.rpi.edu/~hendler/";
-
-    private final ProvFactory pFactory;
-    private final Namespace ns;
-    public ProvNormalization(ProvFactory pFactory) {
-        this.pFactory = pFactory;
-        ns=new Namespace();
-        ns.addKnownNamespaces();
-        ns.register(PROVBOOK_PREFIX, PROVBOOK_NS);
-        ns.register(JIM_PREFIX, JIM_NS);
-    }
-
-    public static void main(String[] args) {
-        String provNFilePath = "src/main/resources/canon-test.provn";
-        String fileout = "target/canon-test.provn";
-
-        ProvNormalization tutorial=new ProvNormalization(InteropFramework.getDefaultFactory());
-
-        ProvFactory provFactory = InteropFramework.getDefaultFactory();
-        InteropFramework interopFramework = new InteropFramework();
-
-        Document document = interopFramework.readDocumentFromFile(provNFilePath);
-
-        List<StatementOrBundle> statements = document.getStatementOrBundle();
-
-        Document mergedDocument = provFactory.newDocument();
-        for (StatementOrBundle statement : statements) {
-            mergedDocument.getStatementOrBundle().add(statement);
+        // Assume a simple merging strategy based on entity identifiers
+        for (Entity entity1 : doc1.getStatementOrBundle().get(0)) {
+            Entity entity2 = findEntity(doc2, entity1.getId());
+            if (entity2 != null) {
+                // Merge attributes of entity1 and entity2
+                Entity mergedEntity = mergeEntities(entity1, entity2);
+                mergedDoc.getEntity().add(mergedEntity);
+            } else {
+                // If no matching entity in doc2, simply add entity1
+                mergedDoc.getEntity().add(entity1);
+            }
         }
 
-        interopFramework.writeDocument(fileout,mergedDocument);
+        // ... (similarly, check entities from doc2 not present in doc1)
+
+        return mergedDoc;
+    }
+
+    private Entity findEntity(Document doc, QualifiedName id) {
+        for (Entity entity : doc.getEntity()) {
+            if (entity.getId().equals(id)) {
+                return entity;
+            }
+        }
+        return null;
+    }
+
+    private Entity mergeEntities(Entity entity1, Entity entity2) {
+        // Create a new entity with the same identifier
+        Entity mergedEntity = pFactory.newEntity(entity1.getId());
+
+        // Merge attributes, assuming they are represented as a map
+        mergedEntity.getAttributes().putAll(entity1.getAttributes());
+        mergedEntity.getAttributes().putAll(entity2.getAttributes());
+
+        return mergedEntity;
     }
 }
