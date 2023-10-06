@@ -10,6 +10,7 @@ import org.openprovenance.prov.model.Bundle;
 import org.openprovenance.prov.model.Document;
 import org.openprovenance.prov.model.QualifiedName;
 import org.openprovenance.prov.interop.InteropFramework;
+import org.openprovenance.prov.vanilla.ProvFactory;
 
 /**
  * The DataHolder class is responsible for holding and managing the data structures
@@ -20,6 +21,10 @@ import org.openprovenance.prov.interop.InteropFramework;
 public class DataHolder {
     private final Map<QualifiedName, Document> documents;
     private final List<List<QualifiedName>> navigation_table;
+    private final QualifiedName mainActivity;
+    private final QualifiedName receiverConnector;
+    private final QualifiedName senderConnector;
+    private final QualifiedName externalInputConnector;
     private Document metadocument;
 
     /**
@@ -29,6 +34,12 @@ public class DataHolder {
     public DataHolder() {
         this.documents = new LinkedHashMap<>();
         this.navigation_table = new ArrayList<>(new ArrayList<>());
+        ProvFactory provFactory = new ProvFactory();
+        Configuration config = ConfigLoader.loadConfig();
+        this.mainActivity = provFactory.newQualifiedName(config.cpmUri, config.mainActivity, null);
+        this.receiverConnector = provFactory.newQualifiedName(config.cpmUri, config.receiverConnector, null);
+        this.senderConnector = provFactory.newQualifiedName(config.cpmUri, config.senderConnector, null);
+        this.externalInputConnector = provFactory.newQualifiedName(config.cpmUri, config.externalConnector, null);
     }
 
     /**
@@ -80,5 +91,21 @@ public class DataHolder {
      */
     public List<List<QualifiedName>> getNavigation_table() {
         return navigation_table;
+    }
+
+    public QualifiedName getMainActivity() {
+        return mainActivity;
+    }
+
+    public QualifiedName getReceiverConnector() {
+        return receiverConnector;
+    }
+
+    public QualifiedName getSenderConnector() {
+        return senderConnector;
+    }
+
+    public QualifiedName getExternalInputConnector() {
+        return externalInputConnector;
     }
 }

@@ -17,4 +17,6 @@ public interface FileLoader {
      * @return A list of File objects representing the files in the specified directory.
      */
     List<File> loadFiles(String path);
+
+    List<File> getFiles();
 }

@@ -18,6 +18,7 @@ import org.jline.reader.impl.completer.StringsCompleter;
 import org.openprovenance.prov.model.QualifiedName;
 import org.openprovenance.prov.vanilla.ProvFactory;
 
+import bthesis.metageneration.FileLoader;
 import bthesis.metageneration.MetaBuilder;
 import bthesis.metageneration.HashDocument;
 import bthesis.metageneration.SystemFileLoader;
@@ -38,11 +39,12 @@ public class AccessApp {
     private static final HashDocument hasher;
     private static final LineReader reader;
     private static final Initializer initializer;
-    private static final SystemFileLoader inputFileLoader;
+    private static final FileLoader inputFileLoader;
 
     static {
         try {
-            path = "src/main/resources/bthesis-provenancechain-digpat";
+            Configuration config = ConfigLoader.loadConfig();
+            path = config.dataPath;
             inputFileLoader = new SystemFileLoader(path);
             hasher = new HashDocument();
             meta = new MetaBuilder();
@@ -73,7 +75,7 @@ public class AccessApp {
                 try {
                     String line = reader.readLine("$> ");
 
-                    switch (line) {
+                    switch (line.trim()) {
                         case "exit" -> run = false;
                         case "precursors" -> findPrecursors(false);
                         case "precursors-activity" -> findPrecursors(true);
@@ -205,6 +207,7 @@ public class AccessApp {
                 "help - Shows this help page",
                 "exit - Exits the program"
         ));
+        System.out.println("-----\nYou can auto-complete the commands using the TAB key\n-----\n");
         help.forEach(it -> System.out.println(it + "\n"));
     }
 

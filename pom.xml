@@ -15,6 +15,7 @@
         <prov.interopl.version>1.0.0</prov.interopl.version>
         <jline.version>3.23.0</jline.version>
         <jansi.version>2.4.0</jansi.version>
+        <jackson-databind.version>2.15.2</jackson-databind.version>
     </properties>
 
     <dependencies>
@@ -38,6 +39,12 @@
             <artifactId>jansi</artifactId>
             <version>${jansi.version}</version>
         </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
+            <version>${jackson-databind.version}</version>
+        </dependency>
+
     </dependencies>
     <build>
         <plugins>
