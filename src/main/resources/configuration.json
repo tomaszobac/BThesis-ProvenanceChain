@@ -1,0 +1,8 @@
+{
+  "dataPath": "src/main/resources/bthesis-provenancechain-digpat",
+  "cpmUri": "cpm_uri",
+  "mainActivity": "mainActivity",
+  "receiverConnector": "receiverConnector",
+  "senderConnector": "senderConnector",
+  "externalConnector": "externalInputConnector"
+}

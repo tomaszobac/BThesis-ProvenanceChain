@@ -1,6 +1,6 @@
 document
   prefix ns_surgery <https://gitlab.ics.muni.cz/396340/bthesis-provenancechain-digpat/-/tree/master/01/>
   prefix cpm <cpm_uri>
-  entity(ns_surgery:sampleConnector, [prov:type="cmp:receiverConnector"])
+  entity(ns_surgery:sampleConnector, [prov:type='cmp:receiverConnector'])
   entity(ns_surgery:sampleConnector, [prov:label="LABEL"])
 endDocument

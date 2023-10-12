@@ -24,7 +24,7 @@ import bthesis.metageneration.MetaGeneration;
  */
 public class Initializer {
     private final DataHolder memory;
-    private final List<String> connectors;
+    private final List<QualifiedName> connectors;
     private final QualifiedName metaID;
 
     /**
@@ -39,9 +39,10 @@ public class Initializer {
      */
     public Initializer(HashDocument hasher, MetaBuilder meta, List<File> files) throws NoSuchAlgorithmException, InterruptedException {
         this.memory = new DataHolder();
-        this.connectors = Arrays.asList("'cpm:{{cpm_uri}}senderConnector'",
-                "'cpm:{{cpm_uri}}externalInputConnector'",
-                "'cpm:{{cpm_uri}}receiverConnector'");
+        this.connectors = Arrays.asList(
+                this.memory.getSenderConnector(),
+                this.memory.getReceiverConnector(),
+                this.memory.getExternalInputConnector());
         MetaGeneration generation = new MetaGeneration();
         this.memory.setMetadocument(generation.generate(hasher, meta, files));
         this.memory.setDocuments(files);
@@ -88,7 +89,7 @@ public class Initializer {
                     if (entity.getType().isEmpty()) {
                         continue;
                     }
-                    if (connectors.contains(entity.getType().get(0).getValue().toString())) {
+                    if (connectors.contains((QualifiedName) entity.getType().get(0).getValue())) {
                         List<QualifiedName> row = new ArrayList<>();
                         row.add(entity.getId());
                         row.add((QualifiedName) entity.getType().get(0).getValue());

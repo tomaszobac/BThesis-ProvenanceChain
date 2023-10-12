@@ -40,9 +40,9 @@ public class Crawler {
         this.initializer = initializer;
         this.done = new ArrayList<>();
         this.nodes = new ArrayList<>();
-        this.mainActivity = new org.openprovenance.prov.vanilla.QualifiedName("cpm_uri", "mainActivity", "cpm");
-        this.receiverConnector = new org.openprovenance.prov.vanilla.QualifiedName("cpm_uri", "receiverConnector", "cpm");
-        this.senderConnector = new org.openprovenance.prov.vanilla.QualifiedName("cpm_uri", "senderConnector", "cpm");
+        this.mainActivity = initializer.getMemory().getMainActivity();
+        this.receiverConnector = initializer.getMemory().getReceiverConnector();
+        this.senderConnector = initializer.getMemory().getSenderConnector();
     }
 
     /**

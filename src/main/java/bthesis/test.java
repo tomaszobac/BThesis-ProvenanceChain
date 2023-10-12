@@ -22,6 +22,9 @@ public class test {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         intF.writeDocument(baos, Formats.ProvFormat.PROVN, document);
         byte[] byteArray = baos.toByteArray();
+        System.out.println(test.class.getResource("bthesis-provenancechain-digpat"));
+        System.out.println(test.class.getResource("bthesis-provenancechain-digpat").toString());
+        System.out.println(test.class.getResource("bthesis-provenancechain-digpat").toExternalForm());
         System.out.println(colortest());
         System.out.println("full doc: " + document.toString());
         //System.out.println("ID type: " + indexedDocument.getEntity("externalInput").getType());
@@ -97,7 +100,7 @@ public class test {
         System.out.println();
         System.out.println("Bundle Statement: " + bundle.getStatement()); //celý file (není stejný jako origo)
         System.out.println();
-        System.out.println(file.getName()); //test.provn*/
+        System.out.println(file.getName()); //canon-test.provn*/
     }
 
     public static String colortest() {

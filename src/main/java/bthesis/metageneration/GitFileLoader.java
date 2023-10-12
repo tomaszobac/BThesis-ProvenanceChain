@@ -23,4 +23,9 @@ public class GitFileLoader implements FileLoader {
     public List<File> loadFiles(String path) {
         throw new UnsupportedOperationException("Git file loading not implemented yet.");
     }
+
+    @Override
+    public List<File> getFiles() {
+        throw new UnsupportedOperationException("Git file retrieving not implemented yet.");
+    }
 }
