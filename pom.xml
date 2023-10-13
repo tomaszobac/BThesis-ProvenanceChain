@@ -6,15 +6,16 @@
 
     <groupId>bthesis.provenancechain</groupId>
     <artifactId>BThesis-ProvenanceChain</artifactId>
-    <version>2.0</version>
+    <version>3.0</version>
 
     <properties>
-        <maven.compiler.source>17</maven.compiler.source>
-        <maven.compiler.target>17</maven.compiler.target>
-        <prov.model.version>2.0.0</prov.model.version>
-        <prov.interopl.version>1.0.0</prov.interopl.version>
-        <jline.version>3.23.0</jline.version>
         <jansi.version>2.4.0</jansi.version>
+        <jline.version>3.23.0</jline.version>
+        <prov.model.version>2.0.0</prov.model.version>
+        <maven.compiler.target>17</maven.compiler.target>
+        <maven.compiler.source>17</maven.compiler.source>
+        <gitlab4j-api.version>5.3.0</gitlab4j-api.version>
+        <prov.interopl.version>1.0.0</prov.interopl.version>
         <jackson-databind.version>2.15.2</jackson-databind.version>
     </properties>
 
@@ -44,7 +45,11 @@
             <artifactId>jackson-databind</artifactId>
             <version>${jackson-databind.version}</version>
         </dependency>
-
+        <dependency>
+            <groupId>org.gitlab4j</groupId>
+            <artifactId>gitlab4j-api</artifactId>
+            <version>${gitlab4j-api.version}</version>
+        </dependency>
     </dependencies>
     <build>
         <plugins>

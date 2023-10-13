@@ -1,30 +1,52 @@
 package bthesis;
 
+import org.apache.commons.io.IOUtils;
+import org.gitlab4j.api.GitLabApi;
+import org.gitlab4j.api.GitLabApiException;
+import org.gitlab4j.api.models.RepositoryFile;
 import org.openprovenance.prov.interop.Formats;
 import org.openprovenance.prov.model.*;
 import org.openprovenance.prov.vanilla.ProvFactory;
 import org.openprovenance.prov.interop.InteropFramework;
 
 import javax.xml.namespace.QName;
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.Arrays;
 
 public class test {
     public static void main(String[] args) {
         String provNFile = "src/main/resources/bthesis-provenancechain-digpat/01/01_sample_acquisition.provn";
 
-        ProvFactory provFactory = new ProvFactory();
-        InteropFramework intF=new InteropFramework();
-        Document document = intF.readDocumentFromFile(provNFile);
-        //Document document = intF.readDocument("https://gitlab.ics.muni.cz/396340/bthesis-provenancechain-digpat/-/raw/master/01/01_sample_acquisition.provn");
 
+        RepositoryFile file = null;
+        Document document = null;
+        InteropFramework intF=new InteropFramework();
+
+        try (GitLabApi gitLabApi = new GitLabApi("https://gitlab.ics.muni.cz/", "usLuqR2Km1yvSAkssYSe")) {
+            file = gitLabApi.getRepositoryFileApi().getFile("396340/bthesis-provenancechain-digpat", "01/01_sample_acquisition.provn", "master");
+            document = intF.deserialiseDocument(new ByteArrayInputStream(file.getDecodedContentAsBytes()), Formats.ProvFormat.PROVN);
+        } catch (IOException | GitLabApiException e) {
+            throw new RuntimeException(e);
+        }
+
+
+
+        //Document document = intF.readDocumentFromFile(provNFile);
+        ProvFactory provFactory = new ProvFactory();
         IndexedDocument indexedDocument = new IndexedDocument(provFactory,document);
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         intF.writeDocument(baos, Formats.ProvFormat.PROVN, document);
         byte[] byteArray = baos.toByteArray();
-        System.out.println(test.class.getResource("bthesis-provenancechain-digpat"));
+        /*System.out.println(test.class.getResource("bthesis-provenancechain-digpat"));
         System.out.println(test.class.getResource("bthesis-provenancechain-digpat").toString());
-        System.out.println(test.class.getResource("bthesis-provenancechain-digpat").toExternalForm());
+        System.out.println(test.class.getResource("bthesis-provenancechain-digpat").toExternalForm());*/
         System.out.println(colortest());
         System.out.println("full doc: " + document.toString());
         //System.out.println("ID type: " + indexedDocument.getEntity("externalInput").getType());
