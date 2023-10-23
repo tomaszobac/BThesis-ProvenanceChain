@@ -1,6 +1,7 @@
 package bthesis;
 
-import org.apache.commons.io.IOUtils;
+import bthesis.metageneration.IFileLoader;
+import bthesis.metageneration.LoaderResolver;
 import org.gitlab4j.api.GitLabApi;
 import org.gitlab4j.api.GitLabApiException;
 import org.gitlab4j.api.models.RepositoryFile;
@@ -9,37 +10,62 @@ import org.openprovenance.prov.model.*;
 import org.openprovenance.prov.vanilla.ProvFactory;
 import org.openprovenance.prov.interop.InteropFramework;
 
-import javax.xml.namespace.QName;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.Arrays;
+import java.util.Objects;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class test {
     public static void main(String[] args) {
         String provNFile = "src/main/resources/bthesis-provenancechain-digpat/01/01_sample_acquisition.provn";
 
-
-        RepositoryFile file = null;
-        Document document = null;
         InteropFramework intF=new InteropFramework();
+        /*RepositoryFile file = null;
+        Document document = null;
+        URL testurl = null;
 
-        try (GitLabApi gitLabApi = new GitLabApi("https://gitlab.ics.muni.cz/", "usLuqR2Km1yvSAkssYSe")) {
-            file = gitLabApi.getRepositoryFileApi().getFile("396340/bthesis-provenancechain-digpat", "01/01_sample_acquisition.provn", "master");
+        try {
+            testurl = new URL("https://gitlab.ics.muni.cz/396340/bthesis-provenancechain-digpat/-/blob/master/01/01_sample_acquisition.provn");
+        } catch (MalformedURLException e) {
+            throw new RuntimeException(e);
+        }
+        String[] pathSegments = testurl.getPath().split("/");
+        StringBuilder filePath = new StringBuilder();
+        for (int i = 6; i != pathSegments.length; i++) filePath.append("/").append(pathSegments[i]);
+        filePath.deleteCharAt(0);
+        System.out.println(filePath);
+        try (GitLabApi gitLabApi = new GitLabApi(testurl.getProtocol()+"://"+testurl.getHost(), "usLuqR2Km1yvSAkssYSe")) {
+            file = gitLabApi.getRepositoryFileApi().getFile(pathSegments[1]+"/"+pathSegments[2], filePath.toString(), pathSegments[5]);
             document = intF.deserialiseDocument(new ByteArrayInputStream(file.getDecodedContentAsBytes()), Formats.ProvFormat.PROVN);
         } catch (IOException | GitLabApiException e) {
             throw new RuntimeException(e);
-        }
+        }*/
 
+        System.out.println("file:///C:/sa/sas/asa.provn".replaceAll("file:/+", ""));
+
+        Pattern systemPattern = Pattern.compile("^[.0-9a-zA-Z]+/|^/|^[a-zA-Z]:\\\\|file:/+");
+
+        Matcher mSYSTEM = systemPattern.matcher("src/main/resources/meta_provenance.provn");
+        Document iddocument = intF.readDocumentFromFile("C:\\Users\\Tom\\Documents\\bthesis-provenancechain\\src\\main\\resources\\meta_provenance.provn");
+        Bundle idbundle = (Bundle) iddocument.getStatementOrBundle().get(0);
+
+        ProvFactory provFactory = new ProvFactory();
+        LoaderResolver resolver = new LoaderResolver();
+        System.out.println(idbundle.getId());
+        Document document = resolver.load(provFactory.newQualifiedName(
+                "https://gitlab.ics.muni.cz/396340/bthesis-provenancechain-digpat/-/tree/master/04/",
+                "06_evaluation.provn",
+                null));
 
 
         //Document document = intF.readDocumentFromFile(provNFile);
-        ProvFactory provFactory = new ProvFactory();
         IndexedDocument indexedDocument = new IndexedDocument(provFactory,document);
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         intF.writeDocument(baos, Formats.ProvFormat.PROVN, document);
@@ -122,7 +148,20 @@ public class test {
         System.out.println();
         System.out.println("Bundle Statement: " + bundle.getStatement()); //celý file (není stejný jako origo)
         System.out.println();
-        System.out.println(file.getName()); //canon-test.provn*/
+        System.out.println(file.getName()); //canon-test.provn
+
+        Pattern gitPattern = Pattern.compile("^(http://|https://|git@)");
+        Pattern windowsPathPattern = Pattern.compile("^[a-zA-Z]:\\\\");
+        Pattern unixPathPattern = Pattern.compile("^/");
+        Pattern systemUriPattern = Pattern.compile("file:/+");
+        Pattern systemPattern = Pattern.compile("^[0-9.a-zA-Z]+/|^/|^[a-zA-Z]:\\\\|^[a-zA-Z]:/[^\\\\]*");
+
+        Matcher gitMatcher = gitPattern.matcher(path);
+        Matcher systemMatcher = systemPattern.matcher(path);
+        Matcher windowsPathMatcher = windowsPathPattern.matcher(path);
+        Matcher unixPathMatcher = unixPathPattern.matcher(path);
+        Matcher systemUriMatcher = systemUriPattern.matcher(path);
+        */
     }
 
     public static String colortest() {

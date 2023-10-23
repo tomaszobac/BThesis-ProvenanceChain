@@ -1,14 +1,13 @@
 package bthesis.metageneration;
 
-import java.io.File;
-import java.util.List;
+import org.openprovenance.prov.model.Document;
 
 /**
  * The FileLoader interface defines the method for loading files from a specified path.
  *
  * @author Tomas Zobac
  */
-public interface FileLoader {
+public interface IFileLoader {
 
     /**
      * Loads files from the specified path and returns them as a list of File objects.
@@ -16,7 +15,7 @@ public interface FileLoader {
      * @param path The path to the directory from which files are to be loaded.
      * @return A list of File objects representing the files in the specified directory.
      */
-    List<File> loadFiles(String path);
+    Document loadFile(String path);
 
-    List<File> getFiles();
+    boolean isSupportedExtension(String name);
 }

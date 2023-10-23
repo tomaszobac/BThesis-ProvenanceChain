@@ -46,7 +46,7 @@ public class AccessApp {
      * @throws NoSuchAlgorithmException If the specified algorithm does not exist.
      */
     private static void generateRuntime(String input, String output) throws NoSuchAlgorithmException {
-        SystemFileLoader inputFileLoader = new SystemFileLoader(input);
+        SimulationFiles inputFileLoader = new SimulationFiles(input);
 
         HashDocument hasher = new HashDocument();
         MetaBuilder meta = new MetaBuilder();

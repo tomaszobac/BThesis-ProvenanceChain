@@ -1,7 +1,16 @@
 package bthesis.metageneration;
 
-import java.io.File;
-import java.util.List;
+import org.gitlab4j.api.GitLabApi;
+import org.gitlab4j.api.GitLabApiException;
+import org.gitlab4j.api.models.RepositoryFile;
+import org.openprovenance.prov.interop.Formats;
+import org.openprovenance.prov.interop.InteropFramework;
+import org.openprovenance.prov.model.Document;
+
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
 
 /**
  * The GitFileLoader class implements the FileLoader interface to load files from a Git repository.
@@ -9,7 +18,7 @@ import java.util.List;
  *
  * @author Tomas Zobac
  */
-public class GitFileLoader implements FileLoader {
+public class GitFileLoader implements IFileLoader {
 
     /**
      * Attempts to load files from a specified Git repository path.
@@ -20,12 +29,38 @@ public class GitFileLoader implements FileLoader {
      * @throws UnsupportedOperationException When the method is invoked.
      */
     @Override
-    public List<File> loadFiles(String path) {
-        throw new UnsupportedOperationException("Git file loading not implemented yet.");
+    public Document loadFile(String path) {
+        URL testurl;
+        InteropFramework intF = new InteropFramework();
+
+        try {
+            testurl = new URL(path);
+        } catch (MalformedURLException e) {
+            throw new RuntimeException(e);
+        }
+
+        String[] pathSegments = testurl.getPath().split("/");
+        StringBuilder filePath = new StringBuilder();
+        for (int i = 6; i != pathSegments.length; i++) filePath.append("/").append(pathSegments[i]);
+        filePath.deleteCharAt(0);
+
+        try (GitLabApi gitLabApi = new GitLabApi(testurl.getProtocol() + "://" + testurl.getHost(), "usLuqR2Km1yvSAkssYSe")) {
+            RepositoryFile file = gitLabApi.getRepositoryFileApi().getFile(pathSegments[1] + "/" + pathSegments[2], filePath.toString(), pathSegments[5]);
+            return intF.deserialiseDocument(new ByteArrayInputStream(file.getDecodedContentAsBytes()), Formats.ProvFormat.PROVN);
+        } catch (IOException | GitLabApiException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
-    public List<File> getFiles() {
-        throw new UnsupportedOperationException("Git file retrieving not implemented yet.");
+    public boolean isSupportedExtension(String name) {
+        int lastIndexOf = name.lastIndexOf(".");
+        if (lastIndexOf == -1) {
+            return false;
+        }
+        String ext = name.substring(lastIndexOf + 1);
+        return SupportedExtensions.isSupported(ext);
     }
+
+
 }

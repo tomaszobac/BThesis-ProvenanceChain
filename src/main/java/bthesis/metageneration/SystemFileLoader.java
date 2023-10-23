@@ -1,8 +1,9 @@
 package bthesis.metageneration;
 
+import org.openprovenance.prov.interop.InteropFramework;
+import org.openprovenance.prov.model.Document;
+
 import java.io.File;
-import java.util.List;
-import java.util.ArrayList;
 
 /**
  * The SystemFileLoader class implements the FileLoader interface and provides
@@ -10,17 +11,12 @@ import java.util.ArrayList;
  *
  * @author Tomas Zobac
  */
-public class SystemFileLoader implements FileLoader {
-    List<File> files;
-
+public class SystemFileLoader implements IFileLoader {
     /**
      * Initializes a new instance of the SystemFileLoader class.
      * Calls the loadFiles method to populate the internal files list.
-     *
-     * @param path The path to the directory containing files to be loaded.
      */
-    public SystemFileLoader(String path) {
-        files = loadFiles(path);
+    public SystemFileLoader() {
     }
 
     /**
@@ -28,57 +24,22 @@ public class SystemFileLoader implements FileLoader {
      *
      * @return A list of File objects representing the loaded files.
      */
-    public List<File> getFiles() {
-        return files;
-    }
 
-    /**
-     * Loads files from a given directory and returns them as a list of File objects.
-     *
-     * @param path The path to the directory containing the files to be loaded.
-     * @return A list of File objects representing the loaded files.
-     */
     @Override
-    public List<File> loadFiles(String path) {
-        List<File> fileList = new ArrayList<>();
-        File directory = new File(path);
-
-        loadFilesRecursive(directory, fileList);
-
-        return fileList;
-    }
-
-    /**
-     * Recursively loads files from a given directory and adds them to the provided fileList.
-     *
-     * @param directory The directory from which files are to be loaded.
-     * @param fileList  The list where loaded files will be added.
-     */
-    private void loadFilesRecursive(File directory, List<File> fileList) {
-        if (directory.isDirectory()) {
-            File[] files = directory.listFiles();
-            if (files != null) {
-                for (File file : files) {
-                    if (file.isDirectory()) {
-                        loadFilesRecursive(file, fileList);
-                    } else if (isSupportedExtension(file)) {
-                        fileList.add(file);
-                    }
-                }
-            }
-        } else if (isSupportedExtension(directory)) {
-            fileList.add(directory);
-        }
+    public Document loadFile(String path) {
+        InteropFramework inFm = new InteropFramework();
+        File file = new File(path.replaceAll("file:/+", ""));
+        if (isSupportedExtension(file.getName())) return inFm.readDocumentFromFile(file.getAbsolutePath());
+        else return null;
     }
 
     /**
      * Checks if a given file has a supported extension.
      *
-     * @param file The file to check.
      * @return A boolean value indicating whether the file has a supported extension.
      */
-    private boolean isSupportedExtension(File file) {
-        String name = file.getName();
+    @Override
+    public boolean isSupportedExtension(String name) {
         int lastIndexOf = name.lastIndexOf(".");
         if (lastIndexOf == -1) {
             return false;

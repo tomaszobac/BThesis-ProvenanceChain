@@ -1,0 +1,30 @@
+document
+prefix meta <src/main/resources/>
+bundle meta:meta_provenance.provn
+prefix ns_biobabank <https://gitlab.ics.muni.cz/492601/bthesis-provenancechain-digpat/-/tree/master/03/>
+prefix ns_RDC <https://gitlab.ics.muni.cz/492601/bthesis-provenancechain-digpat/-/tree/master/04/>
+prefix ns_pathology <https://gitlab.ics.muni.cz/492601/bthesis-provenancechain-digpat/-/tree/master/02/>
+prefix hash <HASH_URI>
+prefix meta <src/main/resources/>
+prefix ns_surgery <https://gitlab.ics.muni.cz/492601/bthesis-provenancechain-digpat/-/tree/master/01/>
+
+entity(ns_surgery:abstact_01_sample_acquisition.provn)
+entity(ns_pathology:abstact_02_scanning.provn)
+entity(ns_biobabank:abstact_03_biobanking.provn)
+entity(ns_RDC:abstact_04_preprocessing.provn)
+entity(ns_RDC:abstact_05_training.provn)
+entity(ns_RDC:abstact_06_evaluation.provn)
+entity(ns_surgery:01_sample_acquisition.provn,[hash:sha256 = "e08a13065d0e0c2a94e3ac0ed53fa4ac9514a59e74f93e054113154c8cd26877", hash:md5 = "c79302bb9787af784237f6740e5c3f84"])
+entity(ns_pathology:02_scanning.provn,[hash:sha256 = "e978c1cdd0a927ed61a0bd556091c8290e4141764acd78aa9bad2d1a89fc2649", hash:md5 = "c6ad0ba1b0bf5b7812df141620c69cee"])
+entity(ns_biobabank:03_biobanking.provn,[hash:sha256 = "56eadcc18901b28dd7e86dcb80ff9dc8b452b4012094cb827a44bf20b2085703", hash:md5 = "578d18eab1cadc0b528db31c8cfc8df4"])
+entity(ns_RDC:04_preprocessing.provn,[hash:sha256 = "af25689a3857b03f8d9e976070adabf6a9f7da035efdaa73b53b063a9806c956", hash:md5 = "e251a5b5b932ee29143b14d6bccbcd5a"])
+entity(ns_RDC:05_training.provn,[hash:sha256 = "b6b18d3f5de5e68d45f1f32ee9c5809de330d97276c18e5d6e15e2f488746eb6", hash:md5 = "a21d284733d42e1f7245c8f59b7b30eb"])
+entity(ns_RDC:06_evaluation.provn,[hash:sha256 = "72bdc419f1744e829e2cad7bbded2b4e54874e02e5e1cf7af21b2c2d26fb479d", hash:md5 = "8876502ead070a906eef5b3b76d84788"])
+specializationOf(ns_surgery:01_sample_acquisition.provn,ns_surgery:abstact_01_sample_acquisition.provn)
+specializationOf(ns_pathology:02_scanning.provn,ns_pathology:abstact_02_scanning.provn)
+specializationOf(ns_biobabank:03_biobanking.provn,ns_biobabank:abstact_03_biobanking.provn)
+specializationOf(ns_RDC:04_preprocessing.provn,ns_RDC:abstact_04_preprocessing.provn)
+specializationOf(ns_RDC:05_training.provn,ns_RDC:abstact_05_training.provn)
+specializationOf(ns_RDC:06_evaluation.provn,ns_RDC:abstact_06_evaluation.provn)
+endBundle
+endDocument
