@@ -3,7 +3,6 @@ package bthesis.provenancechain;
 import java.io.File;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Arrays;
 import java.util.ArrayList;
 import java.security.NoSuchAlgorithmException;
 import java.util.Map;
@@ -19,8 +18,6 @@ import org.openprovenance.prov.model.QualifiedName;
 import bthesis.metageneration.MetaBuilder;
 import bthesis.metageneration.HashDocument;
 import bthesis.metageneration.MetaGeneration;
-
-import javax.ws.rs.DELETE;
 
 /**
  * The Initializer class is responsible for initializing the application state,
@@ -116,23 +113,12 @@ public class Initializer {
     }
 
     /**
-     * Returns the map of QualifiedName to Document objects representing the provenance documents.
-     *
-     * @return A map of QualifiedName to Document objects.
-     */
-    @Deprecated
-    public Map<QualifiedName, Document> getDocuments() {
-        return documents;
-    }
-
-    /**
      * Populates the document map based on the list of File objects passed.
      * Reads each file and extracts its bundle ID and document to populate the map.
      *
      * @param documents A list of File objects representing the provenance documents.
      */
-    @Deprecated
-    public void setDocuments(List<File> documents) {
+    private void setDocuments(List<File> documents) {
         InteropFramework inFm = new InteropFramework();
         for (File file : documents) {
             Document temp = inFm.readDocumentFromFile(file.getAbsolutePath());

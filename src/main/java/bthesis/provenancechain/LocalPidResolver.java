@@ -14,7 +14,6 @@ import org.openprovenance.prov.model.QualifiedName;
  */
 public class LocalPidResolver implements IPidResolver {
     private final List<List<QualifiedName>> navigation_table;
-    private Document metadocument;
 
     /**
      * Initializes a new instance of the DataHolder class.
@@ -22,26 +21,6 @@ public class LocalPidResolver implements IPidResolver {
      */
     public LocalPidResolver() {
         this.navigation_table = new ArrayList<>(new ArrayList<>()); //TODO: dát do interface + předělat na colection colection + gettable do interface
-    }
-
-
-
-    /**
-     * Returns the meta-document that contains metadata about the provenance documents.
-     *
-     * @return A Document object representing the meta-document.
-     */
-    public Document getMetadocument() {
-        return metadocument;
-    }
-
-    /**
-     * Sets the meta-document that contains metadata about the provenance documents.
-     *
-     * @param metadocument A Document object representing the meta-document.
-     */
-    public void setMetadocument(Document metadocument) {
-        this.metadocument = metadocument;
     }
 
     /**
@@ -71,6 +50,7 @@ public class LocalPidResolver implements IPidResolver {
         return null;
     }
 
+    @Override
     public QualifiedName getMetaDoc(QualifiedName externalConnector, QualifiedName bundle_id) {
         for (List<QualifiedName> row : this.navigation_table) {
             if (row.get(1).equals(externalConnector) && row.get(2).equals(bundle_id)) {

@@ -58,7 +58,7 @@ public class AccessApp {
             hasher = new HashDocument();
             meta = new MetaBuilder();
             initializer = new Initializer(hasher, meta, simulationFiles.getFiles(),connectors);
-            crawler = new Crawler(initializer,connectors); //TODO: vrátit na initializer.getMemory() až bude fngovat
+            crawler = new Crawler(initializer.getMemory(), connectors); //TODO: vrátit na initializer.getMemory() až bude fngovat
             scanner = new Scanner(System.in);
             terminal = TerminalBuilder.builder().build();
             reader = initReader();

@@ -5,6 +5,8 @@ import java.util.ArrayList;
 import java.io.ByteArrayOutputStream;
 import java.security.NoSuchAlgorithmException;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import bthesis.metageneration.LoaderResolver;
 import org.openprovenance.prov.model.Bundle;
@@ -26,23 +28,21 @@ import bthesis.metageneration.HashDocument;
  * @author Tomas Zobac
  */
 public class Crawler {
-    private final IPidResolver dataHolder;
+    private final IPidResolver pidResolver;
     private final QualifiedName mainActivity;
     private final QualifiedName receiverConnector;
     private final QualifiedName senderConnector;
     private final QualifiedName externalInputConnector;
     private List<QualifiedName> done;
     private List<ProvenanceNode> nodes;
-    private LoaderResolver resolver;
-    private Initializer initializer;
+    private final LoaderResolver resolver;
 
     /**
      * Initializes a new instance of the Crawler class.
      *
      */
-    public Crawler(Initializer initializer, Map<String, QualifiedName> connectors) { //TODO: vrátit na pidresolver až bude fngovat
-        this.initializer = initializer;
-        this.dataHolder = this.initializer.getMemory();
+    public Crawler(IPidResolver pidResolver, Map<String, QualifiedName> connectors) { //TODO: vrátit na pidresolver až bude fngovat
+        this.pidResolver = pidResolver;
         this.done = new ArrayList<>();
         this.nodes = new ArrayList<>();
         this.mainActivity = connectors.get("mainActivity");
@@ -92,14 +92,14 @@ public class Crawler {
         }
         if (entity_type.equals(this.receiverConnector)) {
             this.done.add(entity_id);
-            getPrecursors(entity_id, this.dataHolder.resolve(entity_id, this.receiverConnector).get(2), include_activity, hasher);
+            getPrecursors(entity_id, this.pidResolver.resolve(entity_id, this.receiverConnector).get(2), include_activity, hasher);
         } else {
             for (Statement statement : temp.getStatement()) {
                 if (!(statement instanceof WasDerivedFrom derived))
                     continue;
                 if (!(derived.getGeneratedEntity().equals(entity_id)))
                     continue;
-                if (!(this.dataHolder.isConnector(derived.getUsedEntity())))
+                if (!(this.pidResolver.isConnector(derived.getUsedEntity())))
                     continue;
                 QualifiedName connector = derived.getUsedEntity();
                 if (!(this.done.contains(connector))) {
@@ -120,28 +120,27 @@ public class Crawler {
      * @throws NoSuchAlgorithmException If the specified algorithm does not exist.
      */
     public void getSuccessors(QualifiedName entity_id, QualifiedName bundle_id, boolean include_activity, HashDocument hasher) throws NoSuchAlgorithmException {
-        Document document = this.initializer.getDocuments().get(bundle_id); //TODO: zprovoznit traversovani
+        Document document = resolver.load(bundle_id);
         QualifiedName entity_type = getEntityType(entity_id, document);
-        assert entity_type != null;
         Bundle temp = (Bundle) document.getStatementOrBundle().get(0);
+        if (entity_type == null) throw new RuntimeException("entity_type is null for: \n" + temp.getId() + "\n" + entity_id);
 
         if (entity_type.equals(this.receiverConnector)) {
             if (include_activity)
                 this.nodes.add(new ProvenanceNode(entity_id, bundle_id, retrieveMainActivity(temp), checkSum(hasher, document)));
             else this.nodes.add(new ProvenanceNode(entity_id, bundle_id, null, checkSum(hasher, document)));
-            checkSum(hasher, document);
             this.done.add(entity_id);
         }
         if (entity_type.equals(this.senderConnector)) {
             this.done.add(entity_id);
-            getSuccessors(entity_id, this.dataHolder.resolve(entity_id, this.senderConnector).get(2), include_activity, hasher);
+            getSuccessors(entity_id, this.pidResolver.resolve(entity_id, this.senderConnector).get(2), include_activity, hasher);
         } else {
             for (Statement statement : temp.getStatement()) {
                 if (!(statement instanceof WasDerivedFrom derived))
                     continue;
                 if (!(derived.getUsedEntity().equals(entity_id)))
                     continue;
-                if (!(this.dataHolder.isConnector(derived.getGeneratedEntity())))
+                if (!(this.pidResolver.isConnector(derived.getGeneratedEntity())))
                     continue;
                 QualifiedName connector = derived.getGeneratedEntity();
                 if (!(this.done.contains(connector))) {
@@ -206,7 +205,7 @@ public class Crawler {
         final String ANSI_RESET = "\u001B[0m";
         InteropFramework framework = new InteropFramework();
         Bundle docbundle = (Bundle) document.getStatementOrBundle().get(0);
-        Document metadocument = this.resolver.load(this.initializer.getMemory().getMetaDoc(this.externalInputConnector, docbundle.getId()));
+        Document metadocument = this.resolver.load(this.pidResolver.getMetaDoc(this.externalInputConnector, docbundle.getId()));
         Bundle metabundle = (Bundle) metadocument.getStatementOrBundle().get(0);
 
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
@@ -215,19 +214,30 @@ public class Crawler {
         for (Statement statement : metabundle.getStatement()) {
             if (statement instanceof Entity entity) {
                 if (entity.getId().equals(docbundle.getId())) {
-                    String sha256 = hasher.generateSHA256(baos.toByteArray());
+                    String sha256 = hasher.generateSHA256(baos.toByteArray()); //TODO: vytáhnout z foru
                     String md5 = hasher.generateMD5(baos.toByteArray());
                     String checksum = docbundle.getId().getLocalPart() + ": ";
+                    String meta_sha256 = entity.getOther().get(0).getValue().toString();
+                    String meta_md5 = entity.getOther().get(1).getValue().toString();
+
+                    Pattern pattern = Pattern.compile("value=(.*?),");
+                    Matcher sha256_matcher = pattern.matcher(meta_sha256);  //TODO: for do classy + interface na vyhledávání hashu v meta
+                    Matcher md5_matcher = pattern.matcher(meta_md5);
+
+                    if (sha256_matcher.find()) {
+                        meta_sha256 = sha256_matcher.group(1);
+                    }
+                    if (md5_matcher.find()) {
+                        meta_md5 = md5_matcher.group(1);
+                    }
+
                     checksum += "SHA256=" +
-                            (sha256.equals(entity.getOther().get(0).getValue()) ?
-                                    ANSI_GREEN + "OK" + ANSI_RESET : ANSI_RED + "FAILED" + ANSI_RESET);
-                    System.out.println("hash: " + sha256);
-                    System.out.println("actual: " + entity.getOther().get(0).getValue());
+                            (sha256.equals(meta_sha256) ?
+                                    ANSI_GREEN + "OK" + ANSI_RESET : ANSI_RED + "FAILED" + ANSI_RESET); //TODO: vytáhnout z foru
                     checksum += " | MD5=" +
-                            (md5.equals(entity.getOther().get(1).getValue()) ?
+                            (md5.equals(meta_md5) ?
                                     ANSI_GREEN + "OK" + ANSI_RESET : ANSI_RED + "FAILED" + ANSI_RESET);
-                    System.out.println("hash: " + md5);
-                    System.out.println("actual: " + entity.getOther().get(1).getValue());
+
                     return checksum;
                 }
             }
