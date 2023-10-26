@@ -1,4 +1,4 @@
-package bthesis.metageneration;
+package bthesis.provenancechain.tools.security;
 
 import java.math.BigInteger;
 import java.security.MessageDigest;

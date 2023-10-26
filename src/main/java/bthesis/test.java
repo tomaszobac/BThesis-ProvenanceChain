@@ -1,26 +1,14 @@
 package bthesis;
 
-import bthesis.metageneration.IFileLoader;
-import bthesis.metageneration.LoaderResolver;
-import org.gitlab4j.api.GitLabApi;
-import org.gitlab4j.api.GitLabApiException;
-import org.gitlab4j.api.models.RepositoryFile;
+import bthesis.provenancechain.tools.loading.LoaderResolver;
 import org.openprovenance.prov.interop.Formats;
 import org.openprovenance.prov.model.*;
 import org.openprovenance.prov.vanilla.ProvFactory;
 import org.openprovenance.prov.interop.InteropFramework;
 
-import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.util.Arrays;
-import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 public class test {
     public static void main(String[] args) {

@@ -1,14 +1,15 @@
-package bthesis.provenancechain;
+package bthesis.provenancechain.logic;
 
 import java.util.List;
 import java.util.ArrayList;
 import java.io.ByteArrayOutputStream;
 import java.security.NoSuchAlgorithmException;
 import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
-import bthesis.metageneration.LoaderResolver;
+import bthesis.provenancechain.logic.data.ProvenanceNode;
+import bthesis.provenancechain.tools.retrieving.IMetaHashRetriever;
+import bthesis.provenancechain.tools.metadata.IPidResolver;
+import bthesis.provenancechain.tools.loading.LoaderResolver;
 import org.openprovenance.prov.model.Bundle;
 import org.openprovenance.prov.model.Entity;
 import org.openprovenance.prov.model.Activity;
@@ -19,7 +20,7 @@ import org.openprovenance.prov.model.WasDerivedFrom;
 import org.openprovenance.prov.interop.Formats;
 import org.openprovenance.prov.interop.InteropFramework;
 
-import bthesis.metageneration.HashDocument;
+import bthesis.provenancechain.tools.security.HashDocument;
 
 /**
  * The Crawler class is responsible for traversing the provenance graph
@@ -36,12 +37,13 @@ public class Crawler {
     private List<QualifiedName> done;
     private List<ProvenanceNode> nodes;
     private final LoaderResolver resolver;
+    private final IMetaHashRetriever metaHashRetriever;
 
     /**
      * Initializes a new instance of the Crawler class.
      *
      */
-    public Crawler(IPidResolver pidResolver, Map<String, QualifiedName> connectors) { //TODO: vrátit na pidresolver až bude fngovat
+    public Crawler(IPidResolver pidResolver, Map<String, QualifiedName> connectors, IMetaHashRetriever metaHashRetriever) {
         this.pidResolver = pidResolver;
         this.done = new ArrayList<>();
         this.nodes = new ArrayList<>();
@@ -50,6 +52,7 @@ public class Crawler {
         this.senderConnector = connectors.get("senderConnector");
         this.externalInputConnector = connectors.get("externalConnector");
         this.resolver = new LoaderResolver();
+        this.metaHashRetriever = metaHashRetriever;
     }
 
     /**
@@ -92,7 +95,7 @@ public class Crawler {
         }
         if (entity_type.equals(this.receiverConnector)) {
             this.done.add(entity_id);
-            getPrecursors(entity_id, this.pidResolver.resolve(entity_id, this.receiverConnector).get(2), include_activity, hasher);
+            getPrecursors(entity_id, this.pidResolver.resolve(entity_id, this.receiverConnector).get("referenceBundleID"), include_activity, hasher);
         } else {
             for (Statement statement : temp.getStatement()) {
                 if (!(statement instanceof WasDerivedFrom derived))
@@ -133,7 +136,7 @@ public class Crawler {
         }
         if (entity_type.equals(this.senderConnector)) {
             this.done.add(entity_id);
-            getSuccessors(entity_id, this.pidResolver.resolve(entity_id, this.senderConnector).get(2), include_activity, hasher);
+            getSuccessors(entity_id, this.pidResolver.resolve(entity_id, this.senderConnector).get("referenceBundleID"), include_activity, hasher);
         } else {
             for (Statement statement : temp.getStatement()) {
                 if (!(statement instanceof WasDerivedFrom derived))
@@ -206,42 +209,24 @@ public class Crawler {
         InteropFramework framework = new InteropFramework();
         Bundle docbundle = (Bundle) document.getStatementOrBundle().get(0);
         Document metadocument = this.resolver.load(this.pidResolver.getMetaDoc(this.externalInputConnector, docbundle.getId()));
-        Bundle metabundle = (Bundle) metadocument.getStatementOrBundle().get(0);
+
 
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         framework.writeDocument(baos, Formats.ProvFormat.PROVN, document);
 
-        for (Statement statement : metabundle.getStatement()) {
-            if (statement instanceof Entity entity) {
-                if (entity.getId().equals(docbundle.getId())) {
-                    String sha256 = hasher.generateSHA256(baos.toByteArray()); //TODO: vytáhnout z foru
-                    String md5 = hasher.generateMD5(baos.toByteArray());
-                    String checksum = docbundle.getId().getLocalPart() + ": ";
-                    String meta_sha256 = entity.getOther().get(0).getValue().toString();
-                    String meta_md5 = entity.getOther().get(1).getValue().toString();
+        String sha256 = hasher.generateSHA256(baos.toByteArray());
+        String md5 = hasher.generateMD5(baos.toByteArray());
+        String checksum = docbundle.getId().getLocalPart() + ": ";
 
-                    Pattern pattern = Pattern.compile("value=(.*?),");
-                    Matcher sha256_matcher = pattern.matcher(meta_sha256);  //TODO: for do classy + interface na vyhledávání hashu v meta
-                    Matcher md5_matcher = pattern.matcher(meta_md5);
+        Map<String, String> hashes = metaHashRetriever.retrieveHash(metadocument, docbundle.getId());
 
-                    if (sha256_matcher.find()) {
-                        meta_sha256 = sha256_matcher.group(1);
-                    }
-                    if (md5_matcher.find()) {
-                        meta_md5 = md5_matcher.group(1);
-                    }
+        checksum += "SHA256=" +
+                (sha256.equals(hashes.get("sha256")) ?
+                        ANSI_GREEN + "OK" + ANSI_RESET : ANSI_RED + "FAILED" + ANSI_RESET);
+        checksum += " | MD5=" +
+                (md5.equals(hashes.get("md5")) ?
+                        ANSI_GREEN + "OK" + ANSI_RESET : ANSI_RED + "FAILED" + ANSI_RESET);
 
-                    checksum += "SHA256=" +
-                            (sha256.equals(meta_sha256) ?
-                                    ANSI_GREEN + "OK" + ANSI_RESET : ANSI_RED + "FAILED" + ANSI_RESET); //TODO: vytáhnout z foru
-                    checksum += " | MD5=" +
-                            (md5.equals(meta_md5) ?
-                                    ANSI_GREEN + "OK" + ANSI_RESET : ANSI_RED + "FAILED" + ANSI_RESET);
-
-                    return checksum;
-                }
-            }
-        }
-        return "checksum failed";
+        return checksum;
     }
 }

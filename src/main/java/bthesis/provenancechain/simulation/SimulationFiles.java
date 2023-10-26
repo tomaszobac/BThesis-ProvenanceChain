@@ -1,4 +1,6 @@
-package bthesis.metageneration;
+package bthesis.provenancechain.simulation;
+
+import bthesis.provenancechain.tools.loading.SupportedExtensions;
 
 import java.io.File;
 import java.util.ArrayList;

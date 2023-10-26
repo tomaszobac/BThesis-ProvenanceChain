@@ -17,7 +17,7 @@
               <shadedArtifactAttached>true</shadedArtifactAttached>
               <transformers>
                 <transformer>
-                  <mainClass>bthesis.provenancechain.AccessApp</mainClass>
+                  <mainClass>bthesis.provenancechain.MainRuntime</mainClass>
                 </transformer>
               </transformers>
             </configuration>

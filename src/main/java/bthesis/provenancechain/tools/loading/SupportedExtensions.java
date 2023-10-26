@@ -1,4 +1,4 @@
-package bthesis.metageneration;
+package bthesis.provenancechain.tools.loading;
 
 /**
  * The SupportedExtensions enum defines the set of file extensions that are supported for provenance documents.

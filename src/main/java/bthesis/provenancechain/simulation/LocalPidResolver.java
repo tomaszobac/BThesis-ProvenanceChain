@@ -1,9 +1,10 @@
-package bthesis.provenancechain;
+package bthesis.provenancechain.simulation;
 
 import java.util.List;
 import java.util.ArrayList;
+import java.util.Map;
 
-import org.openprovenance.prov.model.Document;
+import bthesis.provenancechain.tools.metadata.IPidResolver;
 import org.openprovenance.prov.model.QualifiedName;
 
 /**
@@ -13,14 +14,14 @@ import org.openprovenance.prov.model.QualifiedName;
  * @author Tomas Zobac
  */
 public class LocalPidResolver implements IPidResolver {
-    private final List<List<QualifiedName>> navigation_table;
+    private final List<Map<String, QualifiedName>> navigation_table;
 
     /**
      * Initializes a new instance of the DataHolder class.
      * Constructs empty data structures for documents and the navigation table.
      */
     public LocalPidResolver() {
-        this.navigation_table = new ArrayList<>(new ArrayList<>()); //TODO: dát do interface + předělat na colection colection + gettable do interface
+        this.navigation_table = new ArrayList<>();
     }
 
     /**
@@ -29,8 +30,8 @@ public class LocalPidResolver implements IPidResolver {
      * @return A list of lists of QualifiedName objects representing the navigation table.
      */
     @Override
-    public List<List<QualifiedName>> getNavigation_table() {
-        return navigation_table;
+    public List<Map<String, QualifiedName>> getNavigation_table() {
+        return this.navigation_table;
     }
 
     /**
@@ -41,9 +42,9 @@ public class LocalPidResolver implements IPidResolver {
      * @return The row from the navigation table as a list of QualifiedName objects.
      */
     @Override
-    public List<QualifiedName> resolve(QualifiedName entity_id, QualifiedName entity_type) {
-        for (List<QualifiedName> row : this.navigation_table) {
-            if (row.get(0).equals(entity_id) && row.get(1).equals(entity_type)) {
+    public Map<String, QualifiedName> resolve(QualifiedName entity_id, QualifiedName entity_type) {
+        for (Map<String, QualifiedName> row : this.navigation_table) {
+            if (row.get("entityID").equals(entity_id) && row.get("connectorID").equals(entity_type)) {
                 return row;
             }
         }
@@ -52,9 +53,9 @@ public class LocalPidResolver implements IPidResolver {
 
     @Override
     public QualifiedName getMetaDoc(QualifiedName externalConnector, QualifiedName bundle_id) {
-        for (List<QualifiedName> row : this.navigation_table) {
-            if (row.get(1).equals(externalConnector) && row.get(2).equals(bundle_id)) {
-                return row.get(3);
+        for (Map<String, QualifiedName> row : this.navigation_table) {
+            if (row.get("connectorID").equals(externalConnector) && row.get("referenceBundleID").equals(bundle_id)) {
+                return row.get("metaID");
             }
         }
         return null;
@@ -68,8 +69,8 @@ public class LocalPidResolver implements IPidResolver {
      */
     @Override
     public boolean isConnector(QualifiedName entity_id) {
-        for (List<QualifiedName> row : this.navigation_table) {
-            if (row.get(0).equals(entity_id)) {
+        for (Map<String, QualifiedName> row : this.navigation_table) {
+            if (row.get("entityID").equals(entity_id)) {
                 return true;
             }
         }

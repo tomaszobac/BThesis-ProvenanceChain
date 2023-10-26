@@ -49,7 +49,7 @@ public class MetaBuilder {
 
         Document document = pFactory.newDocument();
         Namespace bundlens = new Namespace();
-        bundlens.register("meta", "src/main/resources/"); //TODO: dát do jsonu
+        bundlens.register("meta", "src/main/resources/");
         namespace.register("meta", "src/main/resources/");
         namespace.register("hash", "HASH_URI");
 
@@ -58,7 +58,7 @@ public class MetaBuilder {
             namespace.register(bundle.getId().getPrefix(), bundle.getId().getNamespaceURI());
             Entity bundletemp = pFactory.newEntity(namespace.qualifiedName(bundle.getId().getPrefix(), "abstact_" + bundle.getId().getLocalPart(), pFactory));
             Entity temp = pFactory.newEntity(namespace.qualifiedName(bundle.getId().getPrefix(), bundle.getId().getLocalPart(), pFactory));
-            pFactory.addAttribute(temp, pFactory.newOther("HASH_URI", "sha256", "hash", resource.getSha256(), null));//TODO: dát do jsonu
+            pFactory.addAttribute(temp, pFactory.newOther("HASH_URI", "sha256", "hash", resource.getSha256(), null));
             pFactory.addAttribute(temp, pFactory.newOther("HASH_URI", "md5", "hash", resource.getMd5(), null));
             statements.put(bundletemp, temp);
         }

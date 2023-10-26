@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.ByteArrayOutputStream;
 import java.security.NoSuchAlgorithmException;
 
+import bthesis.provenancechain.tools.security.HashDocument;
 import org.openprovenance.prov.interop.Formats;
 import org.openprovenance.prov.interop.InteropFramework;
 import org.openprovenance.prov.model.Document;

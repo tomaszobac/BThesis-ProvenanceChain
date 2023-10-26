@@ -1,4 +1,4 @@
-package bthesis.provenancechain;
+package bthesis.provenancechain.logic.data;
 
 import java.util.List;
 

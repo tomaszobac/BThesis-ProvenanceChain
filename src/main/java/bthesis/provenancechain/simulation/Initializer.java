@@ -1,9 +1,8 @@
-package bthesis.provenancechain;
+package bthesis.provenancechain.simulation;
 
 import java.io.File;
 import java.util.HashMap;
 import java.util.List;
-import java.util.ArrayList;
 import java.security.NoSuchAlgorithmException;
 import java.util.Map;
 
@@ -16,7 +15,7 @@ import org.openprovenance.prov.model.Statement;
 import org.openprovenance.prov.model.QualifiedName;
 
 import bthesis.metageneration.MetaBuilder;
-import bthesis.metageneration.HashDocument;
+import bthesis.provenancechain.tools.security.HashDocument;
 import bthesis.metageneration.MetaGeneration;
 
 /**
@@ -91,7 +90,7 @@ public class Initializer {
      * Populates the navigation table with entities from the provenance documents.
      * Only entities that match predefined connector types are added to the table.
      */
-    private void fillTable() {
+    private void fillTable() { //TODO: zeptat se jestli přesunout do PidResolveru jako setTable
         for (Document document : this.documents.values()) {
             Bundle bundle = (Bundle) document.getStatementOrBundle().get(0);
             for (Statement statement : bundle.getStatement()) {
@@ -100,11 +99,11 @@ public class Initializer {
                         continue;
                     }
                     if (connectors.contains((QualifiedName) entity.getType().get(0).getValue())) {
-                        List<QualifiedName> row = new ArrayList<>();
-                        row.add(entity.getId());
-                        row.add((QualifiedName) entity.getType().get(0).getValue());
-                        row.add((QualifiedName) entity.getOther().get(0).getValue());
-                        row.add(this.metaID);
+                        Map<String, QualifiedName> row = new HashMap<>();
+                        row.put("entityID", entity.getId());
+                        row.put("connectorID", (QualifiedName) entity.getType().get(0).getValue());
+                        row.put("referenceBundleID", (QualifiedName) entity.getOther().get(0).getValue());
+                        row.put("metaID", this.metaID);
                         getMemory().getNavigation_table().add(row);
                     }
                 }

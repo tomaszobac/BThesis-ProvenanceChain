@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.ArrayList;
 import java.security.NoSuchAlgorithmException;
 
+import bthesis.provenancechain.tools.security.HashDocument;
 import org.openprovenance.prov.model.Document;
 
 /**

@@ -4,7 +4,7 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>bthesis.provenancechain</groupId>
+    <groupId>bthesis</groupId>
     <artifactId>BThesis-ProvenanceChain</artifactId>
     <version>3.0</version>
 
@@ -66,7 +66,7 @@
                             <transformers>
                                 <transformer implementation=
                                                      "org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
-                                    <mainClass>bthesis.provenancechain.AccessApp</mainClass>
+                                    <mainClass>bthesis.Main</mainClass>
                                 </transformer>
                             </transformers>
                         </configuration>

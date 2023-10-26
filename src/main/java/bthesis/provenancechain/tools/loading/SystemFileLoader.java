@@ -1,4 +1,4 @@
-package bthesis.metageneration;
+package bthesis.provenancechain.tools.loading;
 
 import org.openprovenance.prov.interop.InteropFramework;
 import org.openprovenance.prov.model.Document;

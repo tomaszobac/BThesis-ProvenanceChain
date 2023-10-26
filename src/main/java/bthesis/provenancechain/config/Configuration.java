@@ -1,4 +1,4 @@
-package bthesis.provenancechain;
+package bthesis.provenancechain.config;
 
 public class Configuration {
     public String dataPath;

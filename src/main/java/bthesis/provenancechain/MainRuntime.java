@@ -9,7 +9,15 @@ import java.util.Scanner;
 import java.util.ArrayList;
 import java.security.NoSuchAlgorithmException;
 
-import bthesis.metageneration.SimulationFiles;
+import bthesis.provenancechain.logic.Crawler;
+import bthesis.provenancechain.logic.data.ProvenanceNode;
+import bthesis.provenancechain.simulation.Initializer;
+import bthesis.provenancechain.simulation.SimMetaHashRetriever;
+import bthesis.provenancechain.simulation.SimulationFiles;
+import bthesis.provenancechain.config.ConfigLoader;
+import bthesis.provenancechain.config.Configuration;
+import bthesis.provenancechain.tools.retrieving.IMetaHashRetriever;
+import bthesis.provenancechain.tools.metadata.IPidResolver;
 import org.jline.terminal.Terminal;
 import org.jline.terminal.TerminalBuilder;
 import org.jline.reader.LineReader;
@@ -22,7 +30,7 @@ import org.openprovenance.prov.model.QualifiedName;
 import org.openprovenance.prov.vanilla.ProvFactory;
 
 import bthesis.metageneration.MetaBuilder;
-import bthesis.metageneration.HashDocument;
+import bthesis.provenancechain.tools.security.HashDocument;
 
 /**
  * The AccessApp class serves as the entry point for the application.
@@ -31,7 +39,7 @@ import bthesis.metageneration.HashDocument;
  *
  * @author Tomas Zobac
  */
-public class AccessApp {
+public class MainRuntime {
     private static final String path;
     private static final Crawler crawler;
     private static final Scanner scanner;
@@ -40,8 +48,10 @@ public class AccessApp {
     private static final HashDocument hasher;
     private static final LineReader reader;
     private static final Initializer initializer;
+    private static final IPidResolver pidResolver;
     private static final SimulationFiles simulationFiles;
     private static final Map<String, QualifiedName> connectors;
+    private static final IMetaHashRetriever metaHashRetriever;
 
     static {
         try {
@@ -57,8 +67,10 @@ public class AccessApp {
             simulationFiles = new SimulationFiles(path);
             hasher = new HashDocument();
             meta = new MetaBuilder();
+            metaHashRetriever = new SimMetaHashRetriever();
             initializer = new Initializer(hasher, meta, simulationFiles.getFiles(),connectors);
-            crawler = new Crawler(initializer.getMemory(), connectors); //TODO: vrátit na initializer.getMemory() až bude fngovat
+            pidResolver = initializer.getMemory();
+            crawler = new Crawler(pidResolver, connectors, metaHashRetriever);
             scanner = new Scanner(System.in);
             terminal = TerminalBuilder.builder().build();
             reader = initReader();
@@ -74,7 +86,7 @@ public class AccessApp {
      * @param args The command-line arguments. Currently not used.
      * @throws IOException if an I/O error occurs.
      */
-    public static void main(String[] args) throws IOException {
+    public static void run() throws IOException {
         boolean run = true;
 
         try {
@@ -92,7 +104,7 @@ public class AccessApp {
                         case "successors-activity" -> findSuccessors(true);
                         case "resolve" -> resolve();
                         case "help" -> help();
-                        case "list" -> initializer.getMemory().getNavigation_table().forEach(System.out::println);
+                        case "list" -> pidResolver.getNavigation_table().forEach(System.out::println);
                         default -> System.out.println("Unknown command\n");
                     }
                 } catch (EndOfFileException e) {
@@ -223,14 +235,15 @@ public class AccessApp {
     /**
      * Prompts the user to enter an entity ID, then displays the corresponding row from the navigation table.
      */
-    private static void resolve() { //TODO: zadávání jako v precur/succes (pohledat jestli změnit i jinde)
-        System.out.println("Enter entity ID ('prefix:{{uri}}local'): ");
-        String id = scanner.nextLine();
-        for (List<QualifiedName> row : initializer.getMemory().getNavigation_table()) {
-            if (row.get(0).toString().equals(id)) {
+    private static void resolve() {
+        QualifiedName entity = createQN("entity");
+
+        for (Map<String, QualifiedName> row : pidResolver.getNavigation_table()) {
+            if (row.get("entityID").equals(entity)) {
                 System.out.println(row);
             }
         }
+
         System.out.println();
     }
 }

@@ -3,6 +3,8 @@ package bthesis.metageneration;
 import java.util.Scanner;
 import java.security.NoSuchAlgorithmException;
 
+import bthesis.provenancechain.simulation.SimulationFiles;
+import bthesis.provenancechain.tools.security.HashDocument;
 import org.openprovenance.prov.model.Document;
 
 /**
