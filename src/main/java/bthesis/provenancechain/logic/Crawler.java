@@ -81,6 +81,7 @@ public class Crawler {
      * @param hasher           The HashDocument object for hashing.
      * @throws NoSuchAlgorithmException If the specified algorithm does not exist.
      */
+    //TODO: napsat do javadocu rozdíl mezi done a nodes + stručně popsat co dělají 3 core ify
     public void getPrecursors(QualifiedName entity_id, QualifiedName bundle_id, boolean include_activity, HashDocument hasher) throws NoSuchAlgorithmException {
         Document document = resolver.load(bundle_id);
         QualifiedName entity_type = getEntityType(entity_id, document);
@@ -202,7 +203,7 @@ public class Crawler {
      * @return A string representation of the checksum verification result.
      * @throws NoSuchAlgorithmException If the specified algorithm does not exist.
      */
-    private String checkSum(HashDocument hasher, Document document) throws NoSuchAlgorithmException {
+    private String checkSum(HashDocument hasher, Document document) throws NoSuchAlgorithmException { //TODO: volat checksum před vstupem do dalšího balíčku a pokr. v prohlížení jen pokud je správně
         final String ANSI_GREEN = "\u001B[32m";
         final String ANSI_RED = "\u001B[31m";
         final String ANSI_RESET = "\u001B[0m";

@@ -18,7 +18,7 @@ import java.net.URL;
  *
  * @author Tomas Zobac
  */
-public class GitFileLoader implements IFileLoader {
+public class GitLabFileLoader implements IFileLoader {
 
     /**
      * Attempts to load files from a specified Git repository path.

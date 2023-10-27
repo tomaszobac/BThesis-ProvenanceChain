@@ -15,7 +15,7 @@ public class LoaderResolver {
     public Document load(QualifiedName bundleid) {
         String type = checkPath(bundleid.getUri());
         switch (type) {
-            case "git" -> this.loader = new GitFileLoader();
+            case "gitlab" -> this.loader = new GitLabFileLoader();
             case "local" -> this.loader = new SystemFileLoader();
             case "unknown" -> throw new UnsupportedOperationException("Path type not recognized: " + bundleid.getUri());
         }
@@ -30,7 +30,7 @@ public class LoaderResolver {
         Matcher systemMatcher = systemPattern.matcher(path);
 
         if (gitMatcher.find()) {
-            return "git";
+            return "gitlab";
         } else if (systemMatcher.find()) {
             return "local";
         } else {

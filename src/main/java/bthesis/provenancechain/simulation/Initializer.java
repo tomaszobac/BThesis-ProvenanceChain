@@ -90,7 +90,7 @@ public class Initializer {
      * Populates the navigation table with entities from the provenance documents.
      * Only entities that match predefined connector types are added to the table.
      */
-    private void fillTable() { //TODO: zeptat se jestli přesunout do PidResolveru jako setTable
+    private void fillTable() {
         for (Document document : this.documents.values()) {
             Bundle bundle = (Bundle) document.getStatementOrBundle().get(0);
             for (Statement statement : bundle.getStatement()) {
