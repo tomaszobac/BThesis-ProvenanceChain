@@ -12,14 +12,14 @@ public class LoaderResolver {
     public LoaderResolver() {
     }
 
-    public Document load(QualifiedName bundleid) {
-        String type = checkPath(bundleid.getUri());
+    public Document load(QualifiedName bundleId) {
+        String type = checkPath(bundleId.getUri());
         switch (type) {
             case "gitlab" -> this.loader = new GitLabFileLoader();
             case "local" -> this.loader = new SystemFileLoader();
-            case "unknown" -> throw new UnsupportedOperationException("Path type not recognized: " + bundleid.getUri());
+            case "unknown" -> throw new UnsupportedOperationException("Path type not recognized: " + bundleId.getUri());
         }
-        return this.loader.loadFile(bundleid.getUri());
+        return this.loader.loadFile(bundleId.getUri());
     }
 
     private String checkPath(String path) {

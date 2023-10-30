@@ -48,32 +48,32 @@ public class MetaBuilder {
         List<Statement> specialization = new ArrayList<>();
 
         Document document = pFactory.newDocument();
-        Namespace bundlens = new Namespace();
-        bundlens.register("meta", "src/main/resources/");
+        Namespace bundleNamespace = new Namespace();
+        bundleNamespace.register("meta", "src/main/resources/");
         namespace.register("meta", "src/main/resources/");
         namespace.register("hash", "HASH_URI");
 
         for (DocInfoExtender resource : resources) {
             Bundle bundle = (Bundle) resource.getDocument().getStatementOrBundle().get(0);
             namespace.register(bundle.getId().getPrefix(), bundle.getId().getNamespaceURI());
-            Entity bundletemp = pFactory.newEntity(namespace.qualifiedName(bundle.getId().getPrefix(), "abstact_" + bundle.getId().getLocalPart(), pFactory));
+            Entity bundleTemp = pFactory.newEntity(namespace.qualifiedName(bundle.getId().getPrefix(), "abstact_" + bundle.getId().getLocalPart(), pFactory));
             Entity temp = pFactory.newEntity(namespace.qualifiedName(bundle.getId().getPrefix(), bundle.getId().getLocalPart(), pFactory));
             pFactory.addAttribute(temp, pFactory.newOther("HASH_URI", "sha256", "hash", resource.getSha256(), null));
             pFactory.addAttribute(temp, pFactory.newOther("HASH_URI", "md5", "hash", resource.getMd5(), null));
-            statements.put(bundletemp, temp);
+            statements.put(bundleTemp, temp);
         }
         for (Statement statement : statements.keySet()) {
-            Identifiable bundletemp = (Identifiable) statement;
+            Identifiable bundleTemp = (Identifiable) statement;
             Identifiable temp = (Identifiable) statements.get(statement);
-            specialization.add(pFactory.newSpecializationOf(temp.getId(), bundletemp.getId()));
+            specialization.add(pFactory.newSpecializationOf(temp.getId(), bundleTemp.getId()));
         }
 
-        document.setNamespace(bundlens);
-        Bundle metabundle = pFactory.newNamedBundle(bundlens.qualifiedName("meta", "meta_provenance.provn", pFactory), namespace, null);
-        document.getStatementOrBundle().add(metabundle);
-        metabundle.getStatement().addAll(statements.keySet());
-        metabundle.getStatement().addAll(statements.values());
-        metabundle.getStatement().addAll(specialization);
+        document.setNamespace(bundleNamespace);
+        Bundle metaBundle = pFactory.newNamedBundle(bundleNamespace.qualifiedName("meta", "meta_provenance.provn", pFactory), namespace, null);
+        document.getStatementOrBundle().add(metaBundle);
+        metaBundle.getStatement().addAll(statements.keySet());
+        metaBundle.getStatement().addAll(statements.values());
+        metaBundle.getStatement().addAll(specialization);
         return document;
     }
 }

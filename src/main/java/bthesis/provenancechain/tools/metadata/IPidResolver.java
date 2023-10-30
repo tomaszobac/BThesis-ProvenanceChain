@@ -6,8 +6,8 @@ import java.util.List;
 import java.util.Map;
 
 public interface IPidResolver {
-    List<Map<String, QualifiedName>> getNavigation_table();
-    Map<String, QualifiedName> resolve(QualifiedName entity_id, QualifiedName entity_type);
-    QualifiedName getMetaDoc(QualifiedName externalConnector, QualifiedName bundle_id);
-    boolean isConnector(QualifiedName entity_id);
+    List<Map<String, QualifiedName>> getNavigationTable();
+    Map<String, QualifiedName> resolve(QualifiedName entityId, QualifiedName entityType);
+    QualifiedName getMetaDoc(QualifiedName externalConnector, QualifiedName bundleId);
+    boolean isConnector(QualifiedName entityId);
 }

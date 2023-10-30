@@ -33,9 +33,9 @@ import bthesis.metageneration.MetaBuilder;
 import bthesis.provenancechain.tools.security.HashDocument;
 
 /**
- * The AccessApp class serves as the entry point for the application.
- * It initializes the necessary objects, and provides a user interface
- * for interacting with the application through a command-line interface.
+ * The MainRuntime class serves as the entry point for the application.
+ * It initializes the necessary objects and provides a user interface
+ * for interacting with the application through a command-line.
  *
  * @author Tomas Zobac
  */
@@ -80,10 +80,9 @@ public class MainRuntime {
     }
 
     /**
-     * The main method is the entry point to the application.
+     * The run method is the entry point to the application.
      * It provides a command-line interface with autofill for the user to interact with the application.
      *
-     * @param args The command-line arguments. Currently not used.
      * @throws IOException if an I/O error occurs.
      */
     public static void run() throws IOException {
@@ -104,7 +103,7 @@ public class MainRuntime {
                         case "successors-activity" -> findSuccessors(true);
                         case "resolve" -> resolve();
                         case "help" -> help();
-                        case "list" -> pidResolver.getNavigation_table().forEach(System.out::println);
+                        case "list" -> pidResolver.getNavigationTable().forEach(System.out::println);
                         default -> System.out.println("Unknown command\n");
                     }
                 } catch (EndOfFileException e) {
@@ -156,10 +155,10 @@ public class MainRuntime {
     /**
      * Finds and displays the precursors of a specified entity and bundle.
      *
-     * @param find_activity A boolean indicating whether to include activities in the output.
+     * @param findActivity A boolean indicating whether to include activities in the output.
      * @throws NoSuchAlgorithmException if the algorithm used for hashing is not found.
      */
-    private static void findPrecursors(boolean find_activity) throws NoSuchAlgorithmException {
+    private static void findPrecursors(boolean findActivity) throws NoSuchAlgorithmException {
         QualifiedName entity = createQN("entity");
         QualifiedName bundle = createQN("bundle");
         if (entity == null || bundle == null) {
@@ -167,10 +166,10 @@ public class MainRuntime {
             return;
         }
 
-        crawler.getPrecursors(entity, bundle, find_activity, hasher);
+        crawler.getPrecursors(entity, bundle, findActivity, hasher);
 
         System.out.println();
-        if (find_activity) {
+        if (findActivity) {
             for (ProvenanceNode node : crawler.getNodes()) {
                 System.out.println("Precursor:\n" + node.connector() + " from " + node.bundle());
                 System.out.println("Checksum:\n" + node.checksum());
@@ -187,10 +186,10 @@ public class MainRuntime {
     /**
      * Finds and displays the successors of a specified entity and bundle.
      *
-     * @param find_activity A boolean indicating whether to include activities in the output.
+     * @param findActivity A boolean indicating whether to include activities in the output.
      * @throws NoSuchAlgorithmException if the algorithm used for hashing is not found.
      */
-    private static void findSuccessors(boolean find_activity) throws NoSuchAlgorithmException {
+    private static void findSuccessors(boolean findActivity) throws NoSuchAlgorithmException {
         QualifiedName entity = createQN("entity");
         QualifiedName bundle = createQN("bundle");
         if (entity == null || bundle == null) {
@@ -198,9 +197,10 @@ public class MainRuntime {
             return;
         }
 
-        crawler.getSuccessors(entity, bundle, find_activity, hasher);
+        crawler.getSuccessors(entity, bundle, findActivity, hasher);
+
         System.out.println();
-        if (find_activity) {
+        if (findActivity) {
             for (ProvenanceNode node : crawler.getNodes()) {
                 System.out.println("Successor:\n" + node.connector() + " from " + node.bundle());
                 System.out.println("Checksum:\n" + node.checksum());
@@ -238,7 +238,7 @@ public class MainRuntime {
     private static void resolve() {
         QualifiedName entity = createQN("entity");
 
-        for (Map<String, QualifiedName> row : pidResolver.getNavigation_table()) {
+        for (Map<String, QualifiedName> row : pidResolver.getNavigationTable()) {
             if (row.get("entityID").equals(entity)) {
                 System.out.println(row);
             }

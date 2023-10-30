@@ -104,7 +104,7 @@ public class Initializer {
                         row.put("connectorID", (QualifiedName) entity.getType().get(0).getValue());
                         row.put("referenceBundleID", (QualifiedName) entity.getOther().get(0).getValue());
                         row.put("metaID", this.metaID);
-                        getMemory().getNavigation_table().add(row);
+                        getMemory().getNavigationTable().add(row);
                     }
                 }
             }

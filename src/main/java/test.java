@@ -1,5 +1,3 @@
-package bthesis;
-
 import bthesis.provenancechain.tools.loading.LoaderResolver;
 import org.openprovenance.prov.interop.Formats;
 import org.openprovenance.prov.model.*;
