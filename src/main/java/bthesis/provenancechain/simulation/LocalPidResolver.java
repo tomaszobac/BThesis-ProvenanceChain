@@ -52,9 +52,9 @@ public class LocalPidResolver implements IPidResolver {
     }
 
     @Override
-    public QualifiedName getMetaDoc(QualifiedName externalConnector, QualifiedName bundle_id) {
+    public QualifiedName getMetaDoc(QualifiedName connector, QualifiedName bundle_id) {
         for (Map<String, QualifiedName> row : this.navigation_table) {
-            if (row.get("connectorID").equals(externalConnector) && row.get("referenceBundleID").equals(bundle_id)) {
+            if (row.get("referenceBundleID").equals(bundle_id)) {
                 return row.get("metaID");
             }
         }

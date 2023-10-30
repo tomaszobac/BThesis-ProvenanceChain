@@ -33,7 +33,6 @@ public class Crawler {
     private final QualifiedName mainActivity;
     private final QualifiedName receiverConnector;
     private final QualifiedName senderConnector;
-    private final QualifiedName externalInputConnector;
     private List<QualifiedName> done;
     private List<ProvenanceNode> nodes;
     private final LoaderResolver resolver;
@@ -50,7 +49,6 @@ public class Crawler {
         this.mainActivity = connectors.get("mainActivity");
         this.receiverConnector = connectors.get("receiverConnector");
         this.senderConnector = connectors.get("senderConnector");
-        this.externalInputConnector = connectors.get("externalConnector");
         this.resolver = new LoaderResolver();
         this.metaHashRetriever = metaHashRetriever;
     }
@@ -84,14 +82,16 @@ public class Crawler {
     //TODO: napsat do javadocu rozdíl mezi done a nodes + stručně popsat co dělají 3 core ify
     public void getPrecursors(QualifiedName entity_id, QualifiedName bundle_id, boolean include_activity, HashDocument hasher) throws NoSuchAlgorithmException {
         Document document = resolver.load(bundle_id);
+        String checksum = checkSum(hasher, document, true);
+        if (checksum.contains("FAILED")) throw new RuntimeException("Checksum failed for: " + bundle_id + "\n" + checksum + "\nTerminating traversal!");
         QualifiedName entity_type = getEntityType(entity_id, document);
         Bundle temp = (Bundle) document.getStatementOrBundle().get(0);
         if (entity_type == null) throw new RuntimeException("entity_type is null for: \n" + temp.getId() + "\n" + entity_id);
 
         if (entity_type.equals(this.senderConnector)) {
             if (include_activity)
-                this.nodes.add(new ProvenanceNode(entity_id, bundle_id, retrieveMainActivity(temp), checkSum(hasher, document)));
-            else this.nodes.add(new ProvenanceNode(entity_id, bundle_id, null, checkSum(hasher, document)));
+                this.nodes.add(new ProvenanceNode(entity_id, bundle_id, retrieveMainActivity(temp), checksum));
+            else this.nodes.add(new ProvenanceNode(entity_id, bundle_id, null, checksum));
             this.done.add(entity_id);
         }
         if (entity_type.equals(this.receiverConnector)) {
@@ -125,14 +125,16 @@ public class Crawler {
      */
     public void getSuccessors(QualifiedName entity_id, QualifiedName bundle_id, boolean include_activity, HashDocument hasher) throws NoSuchAlgorithmException {
         Document document = resolver.load(bundle_id);
+        String checksum = checkSum(hasher, document, false);
+        if (checksum.contains("FAILED")) throw new RuntimeException("Checksum failed for: " + bundle_id + "\n" + checksum + "\nTerminating traversal!");
         QualifiedName entity_type = getEntityType(entity_id, document);
         Bundle temp = (Bundle) document.getStatementOrBundle().get(0);
         if (entity_type == null) throw new RuntimeException("entity_type is null for: \n" + temp.getId() + "\n" + entity_id);
 
         if (entity_type.equals(this.receiverConnector)) {
             if (include_activity)
-                this.nodes.add(new ProvenanceNode(entity_id, bundle_id, retrieveMainActivity(temp), checkSum(hasher, document)));
-            else this.nodes.add(new ProvenanceNode(entity_id, bundle_id, null, checkSum(hasher, document)));
+                this.nodes.add(new ProvenanceNode(entity_id, bundle_id, retrieveMainActivity(temp), checksum));
+            else this.nodes.add(new ProvenanceNode(entity_id, bundle_id, null, checksum));
             this.done.add(entity_id);
         }
         if (entity_type.equals(this.senderConnector)) {
@@ -203,13 +205,14 @@ public class Crawler {
      * @return A string representation of the checksum verification result.
      * @throws NoSuchAlgorithmException If the specified algorithm does not exist.
      */
-    private String checkSum(HashDocument hasher, Document document) throws NoSuchAlgorithmException { //TODO: volat checksum před vstupem do dalšího balíčku a pokr. v prohlížení jen pokud je správně
+    private String checkSum(HashDocument hasher, Document document, boolean direction) throws NoSuchAlgorithmException {
         final String ANSI_GREEN = "\u001B[32m";
         final String ANSI_RED = "\u001B[31m";
         final String ANSI_RESET = "\u001B[0m";
         InteropFramework framework = new InteropFramework();
         Bundle docbundle = (Bundle) document.getStatementOrBundle().get(0);
-        Document metadocument = this.resolver.load(this.pidResolver.getMetaDoc(this.externalInputConnector, docbundle.getId()));
+        QualifiedName connector = direction ? this.receiverConnector : this.senderConnector;
+        Document metadocument = this.resolver.load(this.pidResolver.getMetaDoc(connector, docbundle.getId()));
 
 
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
