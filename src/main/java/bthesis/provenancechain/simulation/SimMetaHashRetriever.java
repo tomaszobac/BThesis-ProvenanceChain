@@ -12,7 +12,22 @@ import org.openprovenance.prov.model.Document;
 import org.openprovenance.prov.model.Statement;
 import org.openprovenance.prov.model.QualifiedName;
 
+/**
+ * BThesis simulation file
+ * Implementation of the {@link IMetaHashRetriever} interface for retrieving hash values from
+ * meta documents in a simulation context.
+ *
+ * @author Tomas Zobac
+ */
 public class SimMetaHashRetriever implements IMetaHashRetriever {
+    /**
+     * Retrieves the hash values (SHA-256 and MD5) from the provided meta document based on a specific bundle ID.
+     *
+     * @param metaDocument The document containing meta information.
+     * @param bundleId The specific ID of the bundle for which the hash should be retrieved.
+     * @return A map containing key-value pairs where the key represents the hash name (sha256 or md5) and
+     *         the value represents its corresponding hash value. If the hash is not found, the value will be null.
+     */
     @Override
     public Map<String, String> retrieveHash(Document metaDocument, QualifiedName bundleId) {
         Bundle metaBundle = (Bundle) metaDocument.getStatementOrBundle().get(0);

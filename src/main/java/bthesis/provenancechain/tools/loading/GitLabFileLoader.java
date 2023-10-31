@@ -13,20 +13,18 @@ import java.net.MalformedURLException;
 import java.net.URL;
 
 /**
- * The GitFileLoader class implements the FileLoader interface to load files from a Git repository.
- * Currently, this class throws an UnsupportedOperationException as Git file loading is not implemented.
+ * Implementation of the {@link IFileLoader} interface for loading files from GitLab repositories.
  *
  * @author Tomas Zobac
  */
 public class GitLabFileLoader implements IFileLoader {
-
     /**
-     * Attempts to load files from a specified Git repository path.
-     * Currently, this method throws an UnsupportedOperationException as it is not implemented.
+     * Loads a file from a GitLab repository based on the provided path and returns it converted to a Document.
+     * This method assumes the provided path is a valid GitLab URL.
      *
-     * @param path The path to the directory in the Git repository from which files are to be loaded.
-     * @return A list of File objects (not supported in the current implementation).
-     * @throws UnsupportedOperationException When the method is invoked.
+     * @param path The URL path to the file in the GitLab repository.
+     * @return The loaded Document.
+     * @throws RuntimeException if there's an error in accessing the URL or interacting with the GitLab API.
      */
     @Override
     public Document loadFile(String path) {
@@ -52,6 +50,12 @@ public class GitLabFileLoader implements IFileLoader {
         }
     }
 
+    /**
+     * Checks if the provided file name has a supported extension.
+     *
+     * @param name The name of the file.
+     * @return True if the file's extension is supported, false otherwise.
+     */
     @Override
     public boolean isSupportedExtension(String name) {
         int lastIndexOf = name.lastIndexOf(".");
@@ -61,6 +65,4 @@ public class GitLabFileLoader implements IFileLoader {
         String ext = name.substring(lastIndexOf + 1);
         return SupportedExtensions.isSupported(ext);
     }
-
-
 }

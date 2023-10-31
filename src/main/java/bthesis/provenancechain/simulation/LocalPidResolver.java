@@ -8,8 +8,9 @@ import bthesis.provenancechain.tools.metadata.IPidResolver;
 import org.openprovenance.prov.model.QualifiedName;
 
 /**
- * The DataHolder class is responsible for holding and managing the data structures
- * that store the provenance documents, navigation table, and meta-document.
+ * BThesis simulation file
+ * Implementation of the {@link IPidResolver} interface for resolving PIDs (Persistent Identifiers)
+ * in a local context. This class uses an in-memory navigation table for the resolution of PIDs.
  *
  * @author Tomas Zobac
  */
@@ -17,17 +18,16 @@ public class LocalPidResolver implements IPidResolver {
     private final List<Map<String, QualifiedName>> navigationTable;
 
     /**
-     * Initializes a new instance of the DataHolder class.
-     * Constructs empty data structures for documents and the navigation table.
+     * Default constructor for the LocalPidResolver. Initializes the navigation table.
      */
     public LocalPidResolver() {
         this.navigationTable = new ArrayList<>();
     }
 
     /**
-     * Returns the navigation table that aids in navigating through the provenance documents.
+     * Retrieves the in-memory navigation table.
      *
-     * @return A list of lists of QualifiedName objects representing the navigation table.
+     * @return The navigation table containing mappings of value IDs to their corresponding QualifiedNames.
      */
     @Override
     public List<Map<String, QualifiedName>> getNavigationTable() {
@@ -35,11 +35,11 @@ public class LocalPidResolver implements IPidResolver {
     }
 
     /**
-     * Resolves the entity by finding its row in the navigation table.
+     * Resolves a given entity ID and entity type to a map of associated row in the navigation table.
      *
-     * @param entityId   The QualifiedName identifier of the entity.
-     * @param entityType The QualifiedName representing the type of the entity.
-     * @return The row from the navigation table as a list of QualifiedName objects.
+     * @param entityId The ID of the entity to be resolved.
+     * @param entityType The type of the entity.
+     * @return A map containing key-value pairs related to the resolved entity, or null if not found.
      */
     @Override
     public Map<String, QualifiedName> resolve(QualifiedName entityId, QualifiedName entityType) {
@@ -51,8 +51,14 @@ public class LocalPidResolver implements IPidResolver {
         return null;
     }
 
+    /**
+     * Retrieves the meta document ID associated with a given referenced bundle ID from the navigation table.
+     *
+     * @param bundleId The ID of the bundle.
+     * @return The QualifiedName of the meta document associated with the given referenced bundle ID, or null if not found.
+     */
     @Override
-    public QualifiedName getMetaDoc(QualifiedName connector, QualifiedName bundleId) {
+    public QualifiedName getMetaDoc(QualifiedName bundleId) {
         for (Map<String, QualifiedName> row : this.navigationTable) {
             if (row.get("referenceBundleID").equals(bundleId)) {
                 return row.get("metaID");
@@ -62,10 +68,10 @@ public class LocalPidResolver implements IPidResolver {
     }
 
     /**
-     * Checks if a given entity is a connector.
+     * Determines if a given entity ID represents a connector by checking its presence in the navigation table.
      *
-     * @param entityId The QualifiedName identifier of the entity.
-     * @return True if the entity is a connector, false otherwise.
+     * @param entityId The ID of the entity to be checked.
+     * @return True if the entity ID is present in the navigation table, indicating it's a connector; false otherwise.
      */
     @Override
     public boolean isConnector(QualifiedName entityId) {

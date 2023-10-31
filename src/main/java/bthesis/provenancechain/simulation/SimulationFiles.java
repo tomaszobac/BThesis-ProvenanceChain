@@ -6,22 +6,39 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * BThesis simulation file
+ * Manages simulation files, providing functionalities to load and retrieve files
+ * from a specified directory and its subdirectories.
+ *
+ * @author Tomas Zobac
+ * */
 public class SimulationFiles {
     List<File> files;
 
+    /**
+     * Constructor that initializes the SimulationFiles by loading files from the specified path.
+     *
+     * @param path The path to the directory from which the files are to be loaded.
+     */
     public SimulationFiles(String path) {
         files = loadFiles(path);
     }
 
+    /**
+     * Retrieves the list of loaded simulation files.
+     *
+     * @return A list of loaded simulation files.
+     */
     public List<File> getFiles() {
         return files;
     }
 
     /**
-     * Loads files from a given directory and returns them as a list of File objects.
+     * Loads simulation files from the specified path.
      *
-     * @param path The path to the directory containing the files to be loaded.
-     * @return A list of File objects representing the loaded files.
+     * @param path The path to the directory from which the files are to be loaded.
+     * @return A list of loaded simulation files from the specified path.
      */
     public List<File> loadFiles(String path) {
         List<File> fileList = new ArrayList<>();
@@ -33,10 +50,10 @@ public class SimulationFiles {
     }
 
     /**
-     * Recursively loads files from a given directory and adds them to the provided fileList.
+     * Recursively loads simulation files from a specified directory and its subdirectories.
      *
-     * @param directory The directory from which files are to be loaded.
-     * @param fileList  The list where loaded files will be added.
+     * @param directory The directory from which the files are to be loaded.
+     * @param fileList The list to which the loaded files are added.
      */
     private void loadFilesRecursive(File directory, List<File> fileList) {
         if (directory.isDirectory()) {
@@ -56,10 +73,10 @@ public class SimulationFiles {
     }
 
     /**
-     * Checks if a given file has a supported extension.
+     * Checks if the provided file has a supported extension.
      *
-     * @param file The file to check.
-     * @return A boolean value indicating whether the file has a supported extension.
+     * @param file The file whose extension is to be checked.
+     * @return True if the file's extension is supported, false otherwise.
      */
     private boolean isSupportedExtension(File file) {
         String name = file.getName();

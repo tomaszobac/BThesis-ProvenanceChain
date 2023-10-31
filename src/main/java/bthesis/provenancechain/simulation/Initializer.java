@@ -19,8 +19,9 @@ import bthesis.provenancechain.tools.security.HashDocument;
 import bthesis.metageneration.MetaGeneration;
 
 /**
- * The Initializer class is responsible for initializing the application state,
- * including the creation of a DataHolder to store provenance documents and other metadata.
+ * BThesis simulation file
+ * Initializes and manages the simulation data structures, including the PID resolution memory,
+ * meta document generation, and document loading.
  *
  * @author Tomas Zobac
  */
@@ -31,14 +32,14 @@ public class Initializer {
     private final Map<QualifiedName, Document> documents;
 
     /**
-     * Initializes a new instance of the Initializer class.
-     * Sets up the data holder, generates the meta-document, and populates the navigation table.
+     * Constructor that initializes the simulation data structures.
      *
-     * @param hasher The HashDocument object for hashing.
-     * @param meta   The MetaBuilder object for metadata generation.
-     * @param files  A list of File objects representing the provenance documents.
-     * @throws NoSuchAlgorithmException If the specified algorithm does not exist.
-     * @throws InterruptedException     If the thread is interrupted.
+     * @param hasher The HashDocument instance used for hashing.
+     * @param meta The MetaBuilder instance used for meta document construction.
+     * @param files A list of files to be processed.
+     * @param connectors A map of connector identifiers to their qualified names.
+     * @throws NoSuchAlgorithmException if the hashing algorithm is not available.
+     * @throws InterruptedException if the fake loading is interrupted.
      */
     public Initializer(HashDocument hasher,
                        MetaBuilder meta,
@@ -62,9 +63,9 @@ public class Initializer {
     }
 
     /**
-     * Simulates a loading sequence for the application.
+     * Simulates a loading process with a visual feedback.
      *
-     * @throws InterruptedException If the thread is interrupted.
+     * @throws InterruptedException if the thread sleep is interrupted.
      */
     private static void fakeLoading() throws InterruptedException {
         System.out.print(".\r");
@@ -78,17 +79,16 @@ public class Initializer {
     }
 
     /**
-     * Returns the DataHolder object containing the application state.
+     * Retrieves the local PID resolver instance.
      *
-     * @return A DataHolder object.
+     * @return The LocalPidResolver instance.
      */
     public LocalPidResolver getMemory() {
         return memory;
     }
 
     /**
-     * Populates the navigation table with entities from the provenance documents.
-     * Only entities that match predefined connector types are added to the table.
+     * Fills the in-memory navigation table using the loaded documents.
      */
     private void fillTable() {
         for (Document document : this.documents.values()) {
@@ -112,10 +112,9 @@ public class Initializer {
     }
 
     /**
-     * Populates the document map based on the list of File objects passed.
-     * Reads each file and extracts its bundle ID and document to populate the map.
+     * Converts files from {@link SimulationFiles} to Document objects.
      *
-     * @param documents A list of File objects representing the provenance documents.
+     * @param documents A list of files to be processed.
      */
     private void setDocuments(List<File> documents) {
         InteropFramework inFm = new InteropFramework();

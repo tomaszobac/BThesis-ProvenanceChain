@@ -1,5 +1,10 @@
 package bthesis.provenancechain.config;
 
+/**
+ * Represents the configuration settings retrieved from /resources/configuration.json.
+ *
+ * @author Tomas Zobac
+ */
 public class Configuration {
     public String dataPath;
     public String cpmUri;

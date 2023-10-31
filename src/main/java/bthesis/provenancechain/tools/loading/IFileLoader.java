@@ -3,19 +3,24 @@ package bthesis.provenancechain.tools.loading;
 import org.openprovenance.prov.model.Document;
 
 /**
- * The FileLoader interface defines the method for loading files from a specified path.
+ * Represents an interface for loading files based on provided paths.
  *
  * @author Tomas Zobac
  */
 public interface IFileLoader {
-
     /**
-     * Loads files from the specified path and returns them as a list of File objects.
+     * Loads a file based on the given path and returns it converted to a Document.
      *
-     * @param path The path to the directory from which files are to be loaded.
-     * @return A list of File objects representing the files in the specified directory.
+     * @param path The path to the file to be loaded.
+     * @return The loaded Document.
      */
     Document loadFile(String path);
 
+    /**
+     * Checks if the provided file name has a supported extension.
+     *
+     * @param name The name of the file.
+     * @return True if the file's extension is supported, false otherwise.
+     */
     boolean isSupportedExtension(String name);
 }

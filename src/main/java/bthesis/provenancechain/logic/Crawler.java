@@ -23,8 +23,8 @@ import org.openprovenance.prov.interop.InteropFramework;
 import bthesis.provenancechain.tools.security.HashDocument;
 
 /**
- * The Crawler class is responsible for traversing the provenance graph
- * to find precursor and successor nodes related to a given entity.
+ * Facilitates the traversal of provenance data by crawling through documents and
+ * retrieving provenance entities and their relationships.
  *
  * @author Tomas Zobac
  */
@@ -39,8 +39,11 @@ public class Crawler {
     private final IMetaHashRetriever metaHashRetriever;
 
     /**
-     * Initializes a new instance of the Crawler class.
+     * Constructs a new Crawler with the specified PID resolver, connectors, and meta hash retriever.
      *
+     * @param pidResolver The PID resolver for resolving persistent identifiers.
+     * @param connectors A map of connector identifiers to their qualified names.
+     * @param metaHashRetriever The meta hash retriever for fetching hash values.
      */
     public Crawler(IPidResolver pidResolver, Map<String, QualifiedName> connectors, IMetaHashRetriever metaHashRetriever) {
         this.pidResolver = pidResolver;
@@ -54,16 +57,16 @@ public class Crawler {
     }
 
     /**
-     * Returns the list of provenance nodes discovered during crawling.
+     * Retrieves the list of provenance nodes found during the crawl.
      *
-     * @return A list of ProvenanceNode objects.
+     * @return A list of ProvenanceNode instances.
      */
     public List<ProvenanceNode> getNodes() {
         return this.nodes;
     }
 
     /**
-     * Clears the list of done nodes and discovered nodes.
+     * Resets the internal lists of processed nodes and found nodes.
      */
     public void cleanup() {
         this.done = new ArrayList<>();
@@ -71,18 +74,21 @@ public class Crawler {
     }
 
     /**
-     * Crawls through the provenance graph to find precursors of a given entity.
+     * Retrieves the precursors of a given entity and bundle, potentially including activities.
+     * Note:
+     * - The 'done' list keeps track of already processed entities to avoid reprocessing.
+     * - The 'nodes' list accumulates the precursor nodes found during the crawl.
      *
-     * @param entityId        The QualifiedName identifier of the entity.
-     * @param bundleId        The QualifiedName identifier of the bundle.
-     * @param includeActivity If true, activities related to precursors are included.
-     * @param hasher          The HashDocument object for hashing.
-     * @throws NoSuchAlgorithmException If the specified algorithm does not exist.
+     * @param entityId The ID of the entity to start the crawl.
+     * @param bundleId The ID of the bundle containing the entity.
+     * @param includeActivity Indicates whether to include activities in the results.
+     * @param hasher The hasher instance for verifying document integrity.
+     * @throws NoSuchAlgorithmException If the hashing algorithm is not available.
      */
     //TODO: napsat do javadocu rozdíl mezi done a nodes + stručně popsat co dělají 3 core ify
     public void getPrecursors(QualifiedName entityId, QualifiedName bundleId, boolean includeActivity, HashDocument hasher) throws NoSuchAlgorithmException {
         Document document = resolver.load(bundleId);
-        String checksum = checkSum(hasher, document, true);
+        String checksum = checkSum(hasher, document);
         if (checksum.contains("FAILED")) throw new RuntimeException("Checksum failed for: " + bundleId + "\n" + checksum + "\nTerminating traversal!");
         QualifiedName entityType = getEntityType(entityId, document);
         Bundle temp = (Bundle) document.getStatementOrBundle().get(0);
@@ -115,17 +121,20 @@ public class Crawler {
     }
 
     /**
-     * Crawls through the provenance graph to find successors of a given entity.
+     * Retrieves the successors of a given entity and bundle, potentially including activities.
+     * Note:
+     * - The 'done' list keeps track of already processed entities to avoid reprocessing.
+     * - The 'nodes' list accumulates the successor nodes found during the crawl.
      *
-     * @param entityId        The QualifiedName identifier of the entity.
-     * @param bundleId        The QualifiedName identifier of the bundle.
-     * @param includeActivity If true, activities related to successors are included.
-     * @param hasher          The HashDocument object for hashing.
-     * @throws NoSuchAlgorithmException If the specified algorithm does not exist.
+     * @param entityId The ID of the entity to start the crawl.
+     * @param bundleId The ID of the bundle containing the entity.
+     * @param includeActivity Indicates whether to include activities in the results.
+     * @param hasher The hasher instance for verifying document integrity.
+     * @throws NoSuchAlgorithmException If the hashing algorithm is not available.
      */
     public void getSuccessors(QualifiedName entityId, QualifiedName bundleId, boolean includeActivity, HashDocument hasher) throws NoSuchAlgorithmException {
         Document document = resolver.load(bundleId);
-        String checksum = checkSum(hasher, document, false);
+        String checksum = checkSum(hasher, document);
         if (checksum.contains("FAILED")) throw new RuntimeException("Checksum failed for: " + bundleId + "\n" + checksum + "\nTerminating traversal!");
         QualifiedName entityType = getEntityType(entityId, document);
         Bundle temp = (Bundle) document.getStatementOrBundle().get(0);
@@ -158,11 +167,11 @@ public class Crawler {
     }
 
     /**
-     * Retrieves the type of given entity from a document.
+     * Retrieves a connector type of entity from the provided document.
      *
-     * @param entityId The QualifiedName identifier of the entity.
-     * @param document The Document object containing the entity.
-     * @return The QualifiedName representing the type of the entity.
+     * @param entityId The ID of the entity whose connector's type is to be retrieved.
+     * @param document The document containing the entity.
+     * @return The type of the entity as a QualifiedName, or null if the entity is not found.
      */
     private QualifiedName getEntityType(QualifiedName entityId, Document document) {
         Bundle bundle = (Bundle) document.getStatementOrBundle().get(0);
@@ -177,10 +186,10 @@ public class Crawler {
     }
 
     /**
-     * Retrieves the main activity related to a bundle.
+     * Retrieves the main activity associated with a given bundle.
      *
-     * @param bundle The Bundle object containing the statements.
-     * @return A list of QualifiedName objects representing the main activity.
+     * @param bundle The bundle containing the activity.
+     * @return A list of QualifiedNames representing the main activity or null if not found.
      */
     private List<QualifiedName> retrieveMainActivity(Bundle bundle) {
         for (Statement statement : bundle.getStatement()) {
@@ -198,21 +207,20 @@ public class Crawler {
     }
 
     /**
-     * Computes and verifies the checksum for a given document.
+     * Verifies the integrity of the provided document by comparing its hash with the hash stored in the meta document.
      *
-     * @param hasher   The HashDocument object for hashing.
-     * @param document The Document object to be hashed.
-     * @return A string representation of the checksum verification result.
-     * @throws NoSuchAlgorithmException If the specified algorithm does not exist.
+     * @param hasher   The hasher instance for generating hash values.
+     * @param document The document whose integrity is to be verified.
+     * @return A string indicating the result of the checksum verification.
+     * @throws NoSuchAlgorithmException If the hashing algorithm is not available.
      */
-    private String checkSum(HashDocument hasher, Document document, boolean direction) throws NoSuchAlgorithmException {
+    private String checkSum(HashDocument hasher, Document document) throws NoSuchAlgorithmException {
         final String ANSI_GREEN = "\u001B[32m";
         final String ANSI_RED = "\u001B[31m";
         final String ANSI_RESET = "\u001B[0m";
         InteropFramework framework = new InteropFramework();
         Bundle docBundle = (Bundle) document.getStatementOrBundle().get(0);
-        QualifiedName connector = direction ? this.receiverConnector : this.senderConnector;
-        Document metaDocument = this.resolver.load(this.pidResolver.getMetaDoc(connector, docBundle.getId()));
+        Document metaDocument = this.resolver.load(this.pidResolver.getMetaDoc(docBundle.getId()));
 
 
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();

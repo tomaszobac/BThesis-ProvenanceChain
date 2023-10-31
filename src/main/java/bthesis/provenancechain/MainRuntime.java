@@ -33,9 +33,7 @@ import bthesis.metageneration.MetaBuilder;
 import bthesis.provenancechain.tools.security.HashDocument;
 
 /**
- * The MainRuntime class serves as the entry point for the application.
- * It initializes the necessary objects and provides a user interface
- * for interacting with the application through a command-line.
+ * Main runtime class responsible for the execution of the application.
  *
  * @author Tomas Zobac
  */
@@ -53,6 +51,9 @@ public class MainRuntime {
     private static final Map<String, QualifiedName> connectors;
     private static final IMetaHashRetriever metaHashRetriever;
 
+    /*
+      Initializes necessary components and loads configurations.
+     */
     static {
         try {
             Configuration config = ConfigLoader.loadConfig();
@@ -80,10 +81,10 @@ public class MainRuntime {
     }
 
     /**
-     * The run method is the entry point to the application.
-     * It provides a command-line interface with autofill for the user to interact with the application.
+     * Main method to run the application. It provides a command-line interface
+     * to interact with various functionalities of the application.
      *
-     * @throws IOException if an I/O error occurs.
+     * @throws IOException if there's an error in I/O operations.
      */
     public static void run() throws IOException {
         boolean run = true;
@@ -120,9 +121,9 @@ public class MainRuntime {
     }
 
     /**
-     * Initializes a LineReader object for reading user input from the terminal.
+     * Initializes a LineReader to handle user input.
      *
-     * @return The initialized LineReader object.
+     * @return an instance of LineReader.
      */
     private static LineReader initReader() {
         return LineReaderBuilder.builder()
@@ -134,10 +135,10 @@ public class MainRuntime {
     }
 
     /**
-     * Prompts the user to enter information to create a QualifiedName object.
+     * Creates a QualifiedName based on user input.
      *
-     * @param subject The subject for which the QualifiedName is being created.
-     * @return The created QualifiedName object.
+     * @param subject The subject name to prompt the user.
+     * @return a new instance of QualifiedName.
      */
     private static QualifiedName createQN(String subject) {
         Scanner scanner = new Scanner(System.in);
@@ -153,10 +154,10 @@ public class MainRuntime {
     }
 
     /**
-     * Finds and displays the precursors of a specified entity and bundle.
+     * Finds and prints the precursors of a given entity and bundle.
      *
-     * @param findActivity A boolean indicating whether to include activities in the output.
-     * @throws NoSuchAlgorithmException if the algorithm used for hashing is not found.
+     * @param findActivity Specifies if the activities of the precursors should be printed.
+     * @throws NoSuchAlgorithmException if there's an error with the hashing algorithm.
      */
     private static void findPrecursors(boolean findActivity) throws NoSuchAlgorithmException {
         QualifiedName entity = createQN("entity");
@@ -184,10 +185,10 @@ public class MainRuntime {
     }
 
     /**
-     * Finds and displays the successors of a specified entity and bundle.
+     * Finds and prints the successors of a given entity and bundle.
      *
-     * @param findActivity A boolean indicating whether to include activities in the output.
-     * @throws NoSuchAlgorithmException if the algorithm used for hashing is not found.
+     * @param findActivity Specifies if the activities of the successors should be printed.
+     * @throws NoSuchAlgorithmException if there's an error with the hashing algorithm.
      */
     private static void findSuccessors(boolean findActivity) throws NoSuchAlgorithmException {
         QualifiedName entity = createQN("entity");
@@ -215,7 +216,7 @@ public class MainRuntime {
     }
 
     /**
-     * Displays a list of available commands and their descriptions.
+     * Displays the list of available commands to the user.
      */
     private static void help() {
         List<String> help = new ArrayList<>(Arrays.asList(
@@ -233,7 +234,7 @@ public class MainRuntime {
     }
 
     /**
-     * Prompts the user to enter an entity ID, then displays the corresponding row from the navigation table.
+     * Resolves and prints a row of a provided entity from the navigation table.
      */
     private static void resolve() {
         QualifiedName entity = createQN("entity");

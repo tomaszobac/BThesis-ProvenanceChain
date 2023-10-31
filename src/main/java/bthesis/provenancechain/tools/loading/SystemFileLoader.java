@@ -6,25 +6,17 @@ import org.openprovenance.prov.model.Document;
 import java.io.File;
 
 /**
- * The SystemFileLoader class implements the FileLoader interface and provides
- * functionality to load files from the local file system.
+ * Implementation of the {@link IFileLoader} interface for loading files from the local file system.
  *
  * @author Tomas Zobac
  */
 public class SystemFileLoader implements IFileLoader {
     /**
-     * Initializes a new instance of the SystemFileLoader class.
-     * Calls the loadFiles method to populate the internal files list.
-     */
-    public SystemFileLoader() {
-    }
-
-    /**
-     * Returns the list of files loaded from the specified directory.
+     * Loads a file from the local file system based on the provided path and returns it converted to a Document.
      *
-     * @return A list of File objects representing the loaded files.
+     * @param path The path to the file on the local file system.
+     * @return The loaded Document if the file's extension is supported, null otherwise.
      */
-
     @Override
     public Document loadFile(String path) {
         InteropFramework inFm = new InteropFramework();
@@ -34,9 +26,10 @@ public class SystemFileLoader implements IFileLoader {
     }
 
     /**
-     * Checks if a given file has a supported extension.
+     * Checks if the provided file name has a supported extension.
      *
-     * @return A boolean value indicating whether the file has a supported extension.
+     * @param name The name of the file.
+     * @return True if the file's extension is supported, false otherwise.
      */
     @Override
     public boolean isSupportedExtension(String name) {
