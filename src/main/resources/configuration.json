@@ -1,8 +1,8 @@
 {
   "dataPath": "src/main/resources/bthesis-provenancechain-digpat",
-  "cpmUri": "cpm_uri",
+  "cpmUri": "https://www.commonprovenancemodel.org/cpm-namespace-v1-0/",
   "mainActivity": "mainActivity",
-  "receiverConnector": "receiverConnector",
-  "senderConnector": "senderConnector",
-  "externalConnector": "externalInputConnector"
+  "receiverConnector": "backwardConnector",
+  "senderConnector": "forwardConnector",
+  "externalConnector": "currentConnector"
 }
