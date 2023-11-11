@@ -26,7 +26,7 @@ import bthesis.metageneration.MetaGeneration;
  * @author Tomas Zobac
  */
 public class Initializer {
-    private final LocalPidResolver memory;
+    private static final LocalPidResolver memory = new LocalPidResolver();
     private final List<QualifiedName> connectors;
     private final QualifiedName metaID;
     private final Map<QualifiedName, Document> documents;
@@ -46,7 +46,6 @@ public class Initializer {
                        List<File> files,
                        Map<String, QualifiedName> connectors) throws NoSuchAlgorithmException, InterruptedException {
         this.documents = new HashMap<>();
-        this.memory = new LocalPidResolver();
         this.connectors = List.of(
                 connectors.get("senderConnector"),
                 connectors.get("receiverConnector"),
@@ -83,7 +82,7 @@ public class Initializer {
      *
      * @return The LocalPidResolver instance.
      */
-    public LocalPidResolver getMemory() {
+    public static LocalPidResolver getMemory() {
         return memory;
     }
 
@@ -104,7 +103,7 @@ public class Initializer {
                         row.put("connectorID", (QualifiedName) entity.getType().get(0).getValue());
                         row.put("referenceBundleID", (QualifiedName) entity.getOther().get(0).getValue());
                         row.put("metaID", this.metaID);
-                        getMemory().getNavigationTable().add(row);
+                        getMemory().getNavigationTable(null).add(row);
                     }
                 }
             }

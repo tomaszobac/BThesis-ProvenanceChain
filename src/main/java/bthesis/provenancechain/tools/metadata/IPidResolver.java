@@ -12,7 +12,7 @@ import java.util.Map;
  */
 public interface IPidResolver {
     /**
-     * Returns the navigational table.
+     * Returns the navigational table corresponding to the provided entity.
      * It should be a collection of maps each containing the valueID:value pairs
      * Example:
      * "entityID":QN of the entity
@@ -23,7 +23,7 @@ public interface IPidResolver {
      * @return A list of maps where each map contains key-value pairs representing
      * value identifiers and their associated QualifiedNames.
      */
-    List<Map<String, QualifiedName>> getNavigationTable();
+    List<Map<String, QualifiedName>> getNavigationTable(QualifiedName entityId);
 
     /**
      * Resolves a given entity ID and entity type to a row from the navigational table.
@@ -32,7 +32,7 @@ public interface IPidResolver {
      * @param entityType The type of the entity.
      * @return A map containing key-value pairs related to the resolved entity.
      */
-    Map<String, QualifiedName> resolve(QualifiedName entityId, QualifiedName entityType);
+    Map<String, QualifiedName> getConnectorEntry(QualifiedName entityId, QualifiedName entityType);
 
     /**
      * Retrieves the meta document from the navigational table by finding an entry referencing the provided bundleId.

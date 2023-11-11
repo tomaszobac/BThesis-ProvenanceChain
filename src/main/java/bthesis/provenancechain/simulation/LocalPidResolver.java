@@ -30,7 +30,7 @@ public class LocalPidResolver implements IPidResolver {
      * @return The navigation table containing mappings of value IDs to their corresponding QualifiedNames.
      */
     @Override
-    public List<Map<String, QualifiedName>> getNavigationTable() {
+    public List<Map<String, QualifiedName>> getNavigationTable(QualifiedName entityId) {
         return this.navigationTable;
     }
 
@@ -42,7 +42,7 @@ public class LocalPidResolver implements IPidResolver {
      * @return A map containing key-value pairs related to the resolved entity, or null if not found.
      */
     @Override
-    public Map<String, QualifiedName> resolve(QualifiedName entityId, QualifiedName entityType) {
+    public Map<String, QualifiedName> getConnectorEntry(QualifiedName entityId, QualifiedName entityType) {
         for (Map<String, QualifiedName> row : this.navigationTable) {
             if (row.get("entityID").equals(entityId) && row.get("connectorID").equals(entityType)) {
                 return row;

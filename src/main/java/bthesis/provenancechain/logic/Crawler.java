@@ -7,6 +7,7 @@ import java.security.NoSuchAlgorithmException;
 import java.util.Map;
 
 import bthesis.provenancechain.logic.data.ProvenanceNode;
+import bthesis.provenancechain.simulation.Initializer;
 import bthesis.provenancechain.tools.retrieving.IMetaHashRetriever;
 import bthesis.provenancechain.tools.metadata.IPidResolver;
 import bthesis.provenancechain.tools.loading.LoaderResolver;
@@ -29,7 +30,6 @@ import bthesis.provenancechain.tools.security.HashDocument;
  * @author Tomas Zobac
  */
 public class Crawler {
-    private final IPidResolver pidResolver;
     private final QualifiedName mainActivity;
     private final QualifiedName receiverConnector;
     private final QualifiedName senderConnector;
@@ -39,20 +39,18 @@ public class Crawler {
     private final IMetaHashRetriever metaHashRetriever;
 
     /**
-     * Constructs a new Crawler with the specified PID resolver, connectors, and meta hash retriever.
+     * Constructs a new Crawler with the specified connectors, and meta hash retriever.
      *
-     * @param pidResolver The PID resolver for resolving persistent identifiers.
      * @param connectors A map of connector identifiers to their qualified names.
      * @param metaHashRetriever The meta hash retriever for fetching hash values.
      */
-    public Crawler(IPidResolver pidResolver, Map<String, QualifiedName> connectors, IMetaHashRetriever metaHashRetriever) {
-        this.pidResolver = pidResolver;
+    public Crawler(Map<String, QualifiedName> connectors, IMetaHashRetriever metaHashRetriever, LoaderResolver resolver) {
         this.done = new ArrayList<>();
         this.nodes = new ArrayList<>();
         this.mainActivity = connectors.get("mainActivity");
         this.receiverConnector = connectors.get("receiverConnector");
         this.senderConnector = connectors.get("senderConnector");
-        this.resolver = new LoaderResolver();
+        this.resolver = resolver;
         this.metaHashRetriever = metaHashRetriever;
     }
 
@@ -75,46 +73,55 @@ public class Crawler {
 
     /**
      * Retrieves the precursors of a given entity and bundle, potentially including activities.
+     * <p>
      * Note:
      * - The 'done' list keeps track of already processed entities to avoid reprocessing.
      * - The 'nodes' list accumulates the precursor nodes found during the crawl.
+     * <p>
+     * The algorithm consists of three main if statements checking for the current entity's type:
+     * 1. if the type is a sender connector, it will add the found precursor into the nodes list
+     * 2. if the type is a receiver connector, the traversal reached the end of the document and the method is
+     *    called again with new location parameters
+     * 3. if the type is neither sender of receiver connector, the algorithm will loop over other statements
+     *    in the document, until it finds one of a WasDerivedFrom type which it will use to find next entity
      *
      * @param entityId The ID of the entity to start the crawl.
-     * @param bundleId The ID of the bundle containing the entity.
+     * @param document A document containing the entity.
      * @param includeActivity Indicates whether to include activities in the results.
      * @param hasher The hasher instance for verifying document integrity.
      * @throws NoSuchAlgorithmException If the hashing algorithm is not available.
      */
-    //TODO: napsat do javadocu rozdíl mezi done a nodes + stručně popsat co dělají 3 core ify
-    public void getPrecursors(QualifiedName entityId, QualifiedName bundleId, boolean includeActivity, HashDocument hasher) throws NoSuchAlgorithmException {
-        Document document = resolver.load(bundleId);
-        String checksum = checkSum(hasher, document);
-        if (checksum.contains("FAILED")) throw new RuntimeException("Checksum failed for: " + bundleId + "\n" + checksum + "\nTerminating traversal!");
+    public void getPrecursors(QualifiedName entityId, Document document, boolean includeActivity, HashDocument hasher) throws NoSuchAlgorithmException {
+        IPidResolver pidResolver = getPidResolver(entityId);
+        Bundle docBundle = (Bundle) document.getStatementOrBundle().get(0);
         QualifiedName entityType = getEntityType(entityId, document);
-        Bundle temp = (Bundle) document.getStatementOrBundle().get(0);
-        if (entityType == null) throw new RuntimeException("entityType is null for: \n" + temp.getId() + "\n" + entityId);
+        if (entityType == null) throw new RuntimeException("entityType is null for: \n" + docBundle.getId() + "\n" + entityId);
 
         if (entityType.equals(this.senderConnector)) {
             if (includeActivity)
-                this.nodes.add(new ProvenanceNode(entityId, bundleId, retrieveMainActivity(temp), checksum));
-            else this.nodes.add(new ProvenanceNode(entityId, bundleId, null, checksum));
+                this.nodes.add(new ProvenanceNode(entityId, docBundle.getId(), retrieveMainActivity(docBundle)));
+            else this.nodes.add(new ProvenanceNode(entityId, docBundle.getId(), null));
             this.done.add(entityId);
         }
         if (entityType.equals(this.receiverConnector)) {
             this.done.add(entityId);
-            getPrecursors(entityId, this.pidResolver.resolve(entityId, this.receiverConnector).get("referenceBundleID"), includeActivity, hasher);
+            document = this.resolver.load(pidResolver.getConnectorEntry(entityId, this.receiverConnector).get("referenceBundleID"));
+            Document metaDocument = this.resolver.load(pidResolver.getMetaDoc(docBundle.getId()));
+            String checksum = checkSum(hasher, document, metaDocument);
+            if (checksum.contains("FAILED")) throw new RuntimeException("Checksum failed for: " + docBundle.getId() + "\n" + checksum + "\nTerminating traversal!");
+            getPrecursors(entityId, document, includeActivity, hasher);
         } else {
-            for (Statement statement : temp.getStatement()) {
+            for (Statement statement : docBundle.getStatement()) {
                 if (!(statement instanceof WasDerivedFrom derived))
                     continue;
                 if (!(derived.getGeneratedEntity().equals(entityId)))
                     continue;
-                if (!(this.pidResolver.isConnector(derived.getUsedEntity())))
+                if (!(pidResolver.isConnector(derived.getUsedEntity())))
                     continue;
                 QualifiedName connector = derived.getUsedEntity();
                 if (!(this.done.contains(connector))) {
                     this.done.add(connector);
-                    getPrecursors(connector, bundleId, includeActivity, hasher);
+                    getPrecursors(connector, document, includeActivity, hasher);
                 }
             }
         }
@@ -125,42 +132,51 @@ public class Crawler {
      * Note:
      * - The 'done' list keeps track of already processed entities to avoid reprocessing.
      * - The 'nodes' list accumulates the successor nodes found during the crawl.
+     * <p>
+     * The algorithm consists of three main if statements checking for the current entity's type:
+     * 1. if the type is a receiver connector, it will add the found successor into the nodes list
+     * 2. if the type is a sender connector, the traversal reached the end of the document and the method is
+     *    called again with new location parameters
+     * 3. if the type is neither sender of receiver connector, the algorithm will loop over other statements
+     *    in the document, until it finds one of a WasDerivedFrom type which it will use to find next entity
      *
      * @param entityId The ID of the entity to start the crawl.
-     * @param bundleId The ID of the bundle containing the entity.
+     * @param document A document containing the entity.
      * @param includeActivity Indicates whether to include activities in the results.
      * @param hasher The hasher instance for verifying document integrity.
      * @throws NoSuchAlgorithmException If the hashing algorithm is not available.
      */
-    public void getSuccessors(QualifiedName entityId, QualifiedName bundleId, boolean includeActivity, HashDocument hasher) throws NoSuchAlgorithmException {
-        Document document = resolver.load(bundleId);
-        String checksum = checkSum(hasher, document);
-        if (checksum.contains("FAILED")) throw new RuntimeException("Checksum failed for: " + bundleId + "\n" + checksum + "\nTerminating traversal!");
+    public void getSuccessors(QualifiedName entityId, Document document, boolean includeActivity, HashDocument hasher) throws NoSuchAlgorithmException {
+        IPidResolver pidResolver = getPidResolver(entityId);
+        Bundle docBundle = (Bundle) document.getStatementOrBundle().get(0);
         QualifiedName entityType = getEntityType(entityId, document);
-        Bundle temp = (Bundle) document.getStatementOrBundle().get(0);
-        if (entityType == null) throw new RuntimeException("entityType is null for: \n" + temp.getId() + "\n" + entityId);
+        if (entityType == null) throw new RuntimeException("entityType is null for: \n" + docBundle.getId() + "\n" + entityId);
 
         if (entityType.equals(this.receiverConnector)) {
             if (includeActivity)
-                this.nodes.add(new ProvenanceNode(entityId, bundleId, retrieveMainActivity(temp), checksum));
-            else this.nodes.add(new ProvenanceNode(entityId, bundleId, null, checksum));
+                this.nodes.add(new ProvenanceNode(entityId, docBundle.getId(), retrieveMainActivity(docBundle)));
+            else this.nodes.add(new ProvenanceNode(entityId, docBundle.getId(), null));
             this.done.add(entityId);
         }
         if (entityType.equals(this.senderConnector)) {
             this.done.add(entityId);
-            getSuccessors(entityId, this.pidResolver.resolve(entityId, this.senderConnector).get("referenceBundleID"), includeActivity, hasher);
+            document = this.resolver.load(pidResolver.getConnectorEntry(entityId, this.senderConnector).get("referenceBundleID"));
+            Document metaDocument = this.resolver.load(pidResolver.getMetaDoc(docBundle.getId()));
+            String checksum = checkSum(hasher, document, metaDocument);
+            if (checksum.contains("FAILED")) throw new RuntimeException("Checksum failed for: " + docBundle.getId() + "\n" + checksum + "\nTerminating traversal!");
+            getSuccessors(entityId, document, includeActivity, hasher);
         } else {
-            for (Statement statement : temp.getStatement()) {
+            for (Statement statement : docBundle.getStatement()) {
                 if (!(statement instanceof WasDerivedFrom derived))
                     continue;
                 if (!(derived.getUsedEntity().equals(entityId)))
                     continue;
-                if (!(this.pidResolver.isConnector(derived.getGeneratedEntity())))
+                if (!(pidResolver.isConnector(derived.getGeneratedEntity())))
                     continue;
                 QualifiedName connector = derived.getGeneratedEntity();
                 if (!(this.done.contains(connector))) {
                     this.done.add(connector);
-                    getSuccessors(connector, bundleId, includeActivity, hasher);
+                    getSuccessors(connector, document, includeActivity, hasher);
                 }
             }
         }
@@ -206,6 +222,10 @@ public class Crawler {
         return null;
     }
 
+    private IPidResolver getPidResolver(QualifiedName entityId) {
+        return Initializer.getMemory();
+    }
+
     /**
      * Verifies the integrity of the provided document by comparing its hash with the hash stored in the meta document.
      *
@@ -214,14 +234,12 @@ public class Crawler {
      * @return A string indicating the result of the checksum verification.
      * @throws NoSuchAlgorithmException If the hashing algorithm is not available.
      */
-    private String checkSum(HashDocument hasher, Document document) throws NoSuchAlgorithmException {
+    public String checkSum(HashDocument hasher, Document document, Document metaDocument) throws NoSuchAlgorithmException {
         final String ANSI_GREEN = "\u001B[32m";
         final String ANSI_RED = "\u001B[31m";
         final String ANSI_RESET = "\u001B[0m";
         InteropFramework framework = new InteropFramework();
         Bundle docBundle = (Bundle) document.getStatementOrBundle().get(0);
-        Document metaDocument = this.resolver.load(this.pidResolver.getMetaDoc(docBundle.getId()));
-
 
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
         framework.writeDocument(byteArrayOutputStream, Formats.ProvFormat.PROVN, document);

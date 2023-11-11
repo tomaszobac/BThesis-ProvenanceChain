@@ -16,6 +16,7 @@ import bthesis.provenancechain.simulation.SimMetaHashRetriever;
 import bthesis.provenancechain.simulation.SimulationFiles;
 import bthesis.provenancechain.config.ConfigLoader;
 import bthesis.provenancechain.config.Configuration;
+import bthesis.provenancechain.tools.loading.LoaderResolver;
 import bthesis.provenancechain.tools.retrieving.IMetaHashRetriever;
 import bthesis.provenancechain.tools.metadata.IPidResolver;
 import org.jline.terminal.Terminal;
@@ -26,6 +27,8 @@ import org.jline.reader.EndOfFileException;
 import org.jline.reader.impl.DefaultParser;
 import org.jline.reader.impl.completer.StringsCompleter;
 
+import org.openprovenance.prov.model.Bundle;
+import org.openprovenance.prov.model.Document;
 import org.openprovenance.prov.model.QualifiedName;
 import org.openprovenance.prov.vanilla.ProvFactory;
 
@@ -50,6 +53,7 @@ public class MainRuntime {
     private static final SimulationFiles simulationFiles;
     private static final Map<String, QualifiedName> connectors;
     private static final IMetaHashRetriever metaHashRetriever;
+    private static final LoaderResolver resolver;
 
     /*
       Initializes necessary components and loads configurations.
@@ -71,7 +75,8 @@ public class MainRuntime {
             metaHashRetriever = new SimMetaHashRetriever();
             initializer = new Initializer(hasher, meta, simulationFiles.getFiles(),connectors);
             pidResolver = initializer.getMemory();
-            crawler = new Crawler(pidResolver, connectors, metaHashRetriever);
+            resolver = new LoaderResolver();
+            crawler = new Crawler(connectors, metaHashRetriever, resolver);
             scanner = new Scanner(System.in);
             terminal = TerminalBuilder.builder().build();
             reader = initReader();
@@ -104,7 +109,7 @@ public class MainRuntime {
                         case "successors-activity" -> findSuccessors(true);
                         case "resolve" -> resolve();
                         case "help" -> help();
-                        case "list" -> pidResolver.getNavigationTable().forEach(System.out::println);
+                        case "list" -> pidResolver.getNavigationTable(null).forEach(System.out::println);
                         default -> System.out.println("Unknown command\n");
                     }
                 } catch (EndOfFileException e) {
@@ -167,20 +172,31 @@ public class MainRuntime {
             return;
         }
 
-        crawler.getPrecursors(entity, bundle, findActivity, hasher);
+        Document document = resolver.load(bundle);
+        Bundle docBundle = (Bundle) document.getStatementOrBundle().get(0);
+        Document metaDocument = resolver.load(pidResolver.getMetaDoc(docBundle.getId()));
+        String checksum = crawler.checkSum(hasher, document, metaDocument);
+
+        if (checksum.contains("FAILED")) throw new RuntimeException("Checksum failed for: " + docBundle.getId() + "\n" + checksum + "\nTerminating traversal!");
+
+        crawler.getPrecursors(entity, document, findActivity, hasher); //TODO: try/catch a vypsat alespoň to co to našlo
+
+        String finalChecksum = "SHA256=" + "\u001B[32m" + "OK" + "\u001B[0m" + " | MD5=" + "\u001B[32m" + "OK" + "\u001B[0m";
 
         System.out.println();
         if (findActivity) {
             for (ProvenanceNode node : crawler.getNodes()) {
                 System.out.println("Precursor:\n" + node.connector() + " from " + node.bundle());
-                System.out.println("Checksum:\n" + node.checksum());
+                System.out.println("Checksum:\n" + finalChecksum);
                 System.out.println("Activities:");
                 node.activities().forEach(System.out::println);
                 System.out.println();
             }
-        } else crawler.getNodes().forEach(item ->
-                System.out.println(item.connector() + " from " +
-                        item.bundle() + "\n" + item.checksum()));
+        } else {
+            crawler.getNodes().forEach(item ->
+                    System.out.println(item.connector() + " from " +
+                            item.bundle() + "\n" + finalChecksum));
+        }
         crawler.cleanup();
     }
 
@@ -198,20 +214,29 @@ public class MainRuntime {
             return;
         }
 
-        crawler.getSuccessors(entity, bundle, findActivity, hasher);
+        Document document = resolver.load(bundle);
+        Bundle docBundle = (Bundle) document.getStatementOrBundle().get(0);
+        Document metaDocument = resolver.load(pidResolver.getMetaDoc(docBundle.getId()));
+        String checksum = crawler.checkSum(hasher, document, metaDocument);
+
+        if (checksum.contains("FAILED")) throw new RuntimeException("Checksum failed for: " + docBundle.getId() + "\n" + checksum + "\nTerminating traversal!");
+
+        crawler.getSuccessors(entity, document, findActivity, hasher);
+
+        String finalChecksum = "SHA256=" + "\u001B[32m" + "OK" + "\u001B[0m" + " | MD5=" + "\u001B[32m" + "OK" + "\u001B[0m";
 
         System.out.println();
         if (findActivity) {
             for (ProvenanceNode node : crawler.getNodes()) {
                 System.out.println("Successor:\n" + node.connector() + " from " + node.bundle());
-                System.out.println("Checksum:\n" + node.checksum());
+                System.out.println("Checksum:\n" + finalChecksum);
                 System.out.println("Activities:");
                 node.activities().forEach(System.out::println);
                 System.out.println();
             }
         } else crawler.getNodes().forEach(item ->
                 System.out.println(item.connector() + " from " +
-                        item.bundle() + "\n" + item.checksum()));
+                        item.bundle() + "\n" + finalChecksum));
         crawler.cleanup();
     }
 
@@ -239,7 +264,7 @@ public class MainRuntime {
     private static void resolve() {
         QualifiedName entity = createQN("entity");
 
-        for (Map<String, QualifiedName> row : pidResolver.getNavigationTable()) {
+        for (Map<String, QualifiedName> row : pidResolver.getNavigationTable(null)) {
             if (row.get("entityID").equals(entity)) {
                 System.out.println(row);
             }
