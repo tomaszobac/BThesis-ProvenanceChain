@@ -66,20 +66,4 @@ public class LocalPidResolver implements IPidResolver {
         }
         return null;
     }
-
-    /**
-     * Determines if a given entity ID represents a connector by checking its presence in the navigation table.
-     *
-     * @param entityId The ID of the entity to be checked.
-     * @return True if the entity ID is present in the navigation table, indicating it's a connector; false otherwise.
-     */
-    @Override
-    public boolean isConnector(QualifiedName entityId) {
-        for (Map<String, QualifiedName> row : this.navigationTable) {
-            if (row.get("entityID").equals(entityId)) {
-                return true;
-            }
-        }
-        return false;
-    }
 }

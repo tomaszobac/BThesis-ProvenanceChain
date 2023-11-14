@@ -41,12 +41,4 @@ public interface IPidResolver {
      * @return The QualifiedName of the meta document associated with the given parameters.
      */
     QualifiedName getMetaDoc(QualifiedName bundleId);
-
-    /**
-     * Determines if a given entity ID represents a connector.
-     *
-     * @param entityId The ID of the entity to be checked.
-     * @return True if the entity represents a connector, false otherwise.
-     */
-    boolean isConnector(QualifiedName entityId);
 }

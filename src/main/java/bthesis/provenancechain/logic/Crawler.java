@@ -116,7 +116,7 @@ public class Crawler {
                     continue;
                 if (!(derived.getGeneratedEntity().equals(entityId)))
                     continue;
-                if (!(pidResolver.isConnector(derived.getUsedEntity())))
+                if (!(isConnector(derived.getUsedEntity(),pidResolver)))
                     continue;
                 QualifiedName connector = derived.getUsedEntity();
                 if (!(this.done.contains(connector))) {
@@ -171,7 +171,7 @@ public class Crawler {
                     continue;
                 if (!(derived.getUsedEntity().equals(entityId)))
                     continue;
-                if (!(pidResolver.isConnector(derived.getGeneratedEntity())))
+                if (!(isConnector(derived.getGeneratedEntity(),pidResolver)))
                     continue;
                 QualifiedName connector = derived.getGeneratedEntity();
                 if (!(this.done.contains(connector))) {
@@ -224,6 +224,21 @@ public class Crawler {
 
     private IPidResolver getPidResolver(QualifiedName entityId) {
         return Initializer.getMemory();
+    }
+
+    /**
+     * Determines if a given entity ID represents a connector by checking its presence in the navigation table.
+     *
+     * @param entityId The ID of the entity to be checked.
+     * @return True if the entity ID is present in the navigation table, indicating it's a connector; false otherwise.
+     */
+    public boolean isConnector(QualifiedName entityId,IPidResolver pidResolver) {
+        for (Map<String, QualifiedName> row : pidResolver.getNavigationTable(null)) {
+            if (row.get("entityID").equals(entityId)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /**
