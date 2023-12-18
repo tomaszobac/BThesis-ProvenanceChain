@@ -4,10 +4,11 @@ import java.io.File;
 import java.io.ByteArrayOutputStream;
 import java.security.NoSuchAlgorithmException;
 
-import bthesis.provenancechain.tools.security.HashDocument;
 import org.openprovenance.prov.interop.Formats;
 import org.openprovenance.prov.interop.InteropFramework;
 import org.openprovenance.prov.model.Document;
+
+import bthesis.provenancechain.tools.security.HashDocument;
 
 /**
  * The DocInfoExtender class is responsible for extending a provenance Document with additional information.

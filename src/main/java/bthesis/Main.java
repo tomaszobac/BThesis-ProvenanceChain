@@ -1,8 +1,8 @@
 package bthesis;
 
-import bthesis.provenancechain.MainRuntime;
-
 import java.io.IOException;
+
+import bthesis.provenancechain.MainRuntime;
 
 /**
  * Main entry point for the application.

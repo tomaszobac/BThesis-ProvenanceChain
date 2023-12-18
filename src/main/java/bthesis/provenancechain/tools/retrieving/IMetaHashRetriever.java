@@ -1,9 +1,9 @@
 package bthesis.provenancechain.tools.retrieving;
 
+import java.util.Map;
+
 import org.openprovenance.prov.model.Document;
 import org.openprovenance.prov.model.QualifiedName;
-
-import java.util.Map;
 
 /**
  * Represents an interface for retrieving hash values from meta documents.

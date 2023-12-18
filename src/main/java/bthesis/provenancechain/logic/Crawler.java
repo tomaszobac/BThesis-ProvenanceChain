@@ -2,15 +2,9 @@ package bthesis.provenancechain.logic;
 
 import java.util.List;
 import java.util.ArrayList;
-import java.io.ByteArrayOutputStream;
 import java.security.NoSuchAlgorithmException;
 import java.util.Map;
 
-import bthesis.provenancechain.logic.data.ProvenanceNode;
-import bthesis.provenancechain.simulation.Initializer;
-import bthesis.provenancechain.tools.retrieving.IMetaHashRetriever;
-import bthesis.provenancechain.tools.metadata.IPidResolver;
-import bthesis.provenancechain.tools.loading.LoaderResolver;
 import org.openprovenance.prov.model.Bundle;
 import org.openprovenance.prov.model.Entity;
 import org.openprovenance.prov.model.Activity;
@@ -18,9 +12,13 @@ import org.openprovenance.prov.model.Document;
 import org.openprovenance.prov.model.Statement;
 import org.openprovenance.prov.model.QualifiedName;
 import org.openprovenance.prov.model.WasDerivedFrom;
-import org.openprovenance.prov.interop.Formats;
-import org.openprovenance.prov.interop.InteropFramework;
 
+import bthesis.provenancechain.logic.data.ProvenanceNode;
+import bthesis.provenancechain.simulation.Initializer;
+import bthesis.provenancechain.tools.retrieving.IMetaHashRetriever;
+import bthesis.provenancechain.tools.metadata.IPidResolver;
+import bthesis.provenancechain.tools.loading.LoaderResolver;
+import bthesis.provenancechain.tools.security.IntegrityVerifier;
 import bthesis.provenancechain.tools.security.HashDocument;
 
 /**
@@ -78,11 +76,12 @@ public class Crawler {
      * - The 'done' list keeps track of already processed entities to avoid reprocessing.
      * - The 'nodes' list accumulates the precursor nodes found during the crawl.
      * <p>
-     * The algorithm consists of three main if statements checking for the current entity's type:
+     * The algorithm consists of two main if statements checking for the current entity's
+     * and of utility for provenance backbone traversal:
      * 1. if the type is a sender connector, it will add the found precursor into the nodes list
      * 2. if the type is a receiver connector, the traversal reached the end of the document and the method is
      *    called again with new location parameters
-     * 3. if the type is neither sender of receiver connector, the algorithm will loop over other statements
+     * 3. else the utility for provenance backbone traversal starts, the algorithm will loop over other statements
      *    in the document, until it finds one of a WasDerivedFrom type which it will use to find next entity
      *
      * @param entityId The ID of the entity to start the crawl.
@@ -107,7 +106,7 @@ public class Crawler {
             this.done.add(entityId);
             document = this.resolver.load(pidResolver.getConnectorEntry(entityId, this.receiverConnector).get("referenceBundleID"));
             Document metaDocument = this.resolver.load(pidResolver.getMetaDoc(docBundle.getId()));
-            String checksum = checkSum(hasher, document, metaDocument);
+            String checksum = IntegrityVerifier.checkSum(hasher, document, metaDocument, metaHashRetriever);
             if (checksum.contains("FAILED")) throw new RuntimeException("Checksum failed for: " + docBundle.getId() + "\n" + checksum + "\nTerminating traversal!");
             getPrecursors(entityId, document, includeActivity, hasher);
         } else {
@@ -133,11 +132,12 @@ public class Crawler {
      * - The 'done' list keeps track of already processed entities to avoid reprocessing.
      * - The 'nodes' list accumulates the successor nodes found during the crawl.
      * <p>
-     * The algorithm consists of three main if statements checking for the current entity's type:
+     * The algorithm consists of two main if statements checking for the current entity's
+     * and of utility for provenance backbone traversal:
      * 1. if the type is a receiver connector, it will add the found successor into the nodes list
      * 2. if the type is a sender connector, the traversal reached the end of the document and the method is
      *    called again with new location parameters
-     * 3. if the type is neither sender of receiver connector, the algorithm will loop over other statements
+     * 3. else the utility for provenance backbone traversal starts, the algorithm will loop over other statements
      *    in the document, until it finds one of a WasDerivedFrom type which it will use to find next entity
      *
      * @param entityId The ID of the entity to start the crawl.
@@ -162,7 +162,7 @@ public class Crawler {
             this.done.add(entityId);
             document = this.resolver.load(pidResolver.getConnectorEntry(entityId, this.senderConnector).get("referenceBundleID"));
             Document metaDocument = this.resolver.load(pidResolver.getMetaDoc(docBundle.getId()));
-            String checksum = checkSum(hasher, document, metaDocument);
+            String checksum = IntegrityVerifier.checkSum(hasher, document, metaDocument, metaHashRetriever);
             if (checksum.contains("FAILED")) throw new RuntimeException("Checksum failed for: " + docBundle.getId() + "\n" + checksum + "\nTerminating traversal!");
             getSuccessors(entityId, document, includeActivity, hasher);
         } else {
@@ -222,6 +222,15 @@ public class Crawler {
         return null;
     }
 
+    /**
+     * This method serves for easier extension of the library with new implementations of IPidResolver, as per request
+     * of the thesis supervisor.
+     * <p>
+     * Currently, it is set to always return the LocalPidResolver. (also specified by the thesis supervisor)
+     *
+     * @param entityId The ID of an Entity for which the PIDs will be resolved.
+     * @return Implementation of the IPidResolver interface.
+     */
     private IPidResolver getPidResolver(QualifiedName entityId) {
         return Initializer.getMemory();
     }
@@ -239,39 +248,5 @@ public class Crawler {
             }
         }
         return false;
-    }
-
-    /**
-     * Verifies the integrity of the provided document by comparing its hash with the hash stored in the meta document.
-     *
-     * @param hasher   The hasher instance for generating hash values.
-     * @param document The document whose integrity is to be verified.
-     * @return A string indicating the result of the checksum verification.
-     * @throws NoSuchAlgorithmException If the hashing algorithm is not available.
-     */
-    public String checkSum(HashDocument hasher, Document document, Document metaDocument) throws NoSuchAlgorithmException {
-        final String ANSI_GREEN = "\u001B[32m";
-        final String ANSI_RED = "\u001B[31m";
-        final String ANSI_RESET = "\u001B[0m";
-        InteropFramework framework = new InteropFramework();
-        Bundle docBundle = (Bundle) document.getStatementOrBundle().get(0);
-
-        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-        framework.writeDocument(byteArrayOutputStream, Formats.ProvFormat.PROVN, document);
-
-        String sha256 = hasher.generateSHA256(byteArrayOutputStream.toByteArray());
-        String md5 = hasher.generateMD5(byteArrayOutputStream.toByteArray());
-        String checksum = docBundle.getId().getLocalPart() + ": ";
-
-        Map<String, String> hashes = metaHashRetriever.retrieveHash(metaDocument, docBundle.getId());
-
-        checksum += "SHA256=" +
-                (sha256.equals(hashes.get("sha256")) ?
-                        ANSI_GREEN + "OK" + ANSI_RESET : ANSI_RED + "FAILED" + ANSI_RESET);
-        checksum += " | MD5=" +
-                (md5.equals(hashes.get("md5")) ?
-                        ANSI_GREEN + "OK" + ANSI_RESET : ANSI_RED + "FAILED" + ANSI_RESET);
-
-        return checksum;
     }
 }

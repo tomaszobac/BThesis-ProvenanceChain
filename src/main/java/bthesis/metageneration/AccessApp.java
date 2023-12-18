@@ -3,9 +3,10 @@ package bthesis.metageneration;
 import java.util.Scanner;
 import java.security.NoSuchAlgorithmException;
 
+import org.openprovenance.prov.model.Document;
+
 import bthesis.provenancechain.simulation.SimulationFiles;
 import bthesis.provenancechain.tools.security.HashDocument;
-import org.openprovenance.prov.model.Document;
 
 /**
  * The AccessApp class serves as the main entry point for generating metaprovenance data.

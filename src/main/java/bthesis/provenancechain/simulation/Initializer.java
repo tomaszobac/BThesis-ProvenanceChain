@@ -3,10 +3,9 @@ package bthesis.provenancechain.simulation;
 import java.io.File;
 import java.util.HashMap;
 import java.util.List;
-import java.security.NoSuchAlgorithmException;
 import java.util.Map;
+import java.security.NoSuchAlgorithmException;
 
-import bthesis.metageneration.WriteDocument;
 import org.openprovenance.prov.interop.InteropFramework;
 import org.openprovenance.prov.model.Entity;
 import org.openprovenance.prov.model.Bundle;
@@ -14,9 +13,10 @@ import org.openprovenance.prov.model.Document;
 import org.openprovenance.prov.model.Statement;
 import org.openprovenance.prov.model.QualifiedName;
 
+import bthesis.metageneration.WriteDocument;
 import bthesis.metageneration.MetaBuilder;
-import bthesis.provenancechain.tools.security.HashDocument;
 import bthesis.metageneration.MetaGeneration;
+import bthesis.provenancechain.tools.security.HashDocument;
 
 /**
  * BThesis simulation file

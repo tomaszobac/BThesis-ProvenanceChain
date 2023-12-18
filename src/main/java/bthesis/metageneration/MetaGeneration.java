@@ -5,8 +5,9 @@ import java.util.List;
 import java.util.ArrayList;
 import java.security.NoSuchAlgorithmException;
 
-import bthesis.provenancechain.tools.security.HashDocument;
 import org.openprovenance.prov.model.Document;
+
+import bthesis.provenancechain.tools.security.HashDocument;
 
 /**
  * The MetaGeneration class is responsible for generating a meta-document that encapsulates

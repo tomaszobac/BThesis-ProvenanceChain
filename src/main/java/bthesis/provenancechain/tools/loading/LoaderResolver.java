@@ -1,10 +1,10 @@
 package bthesis.provenancechain.tools.loading;
 
-import org.openprovenance.prov.model.Document;
-import org.openprovenance.prov.model.QualifiedName;
-
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import org.openprovenance.prov.model.Document;
+import org.openprovenance.prov.model.QualifiedName;
 
 /**
  * Class responsible for resolving the appropriate file loader based on the type of the provided bundle's URI.

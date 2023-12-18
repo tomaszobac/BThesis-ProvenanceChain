@@ -9,6 +9,19 @@ import java.util.Scanner;
 import java.util.ArrayList;
 import java.security.NoSuchAlgorithmException;
 
+import org.jline.terminal.Terminal;
+import org.jline.terminal.TerminalBuilder;
+import org.jline.reader.LineReader;
+import org.jline.reader.LineReaderBuilder;
+import org.jline.reader.EndOfFileException;
+import org.jline.reader.impl.DefaultParser;
+import org.jline.reader.impl.completer.StringsCompleter;
+import org.openprovenance.prov.model.Bundle;
+import org.openprovenance.prov.model.Document;
+import org.openprovenance.prov.model.QualifiedName;
+import org.openprovenance.prov.vanilla.ProvFactory;
+
+import bthesis.metageneration.MetaBuilder;
 import bthesis.provenancechain.logic.Crawler;
 import bthesis.provenancechain.logic.data.ProvenanceNode;
 import bthesis.provenancechain.simulation.Initializer;
@@ -19,20 +32,7 @@ import bthesis.provenancechain.config.Configuration;
 import bthesis.provenancechain.tools.loading.LoaderResolver;
 import bthesis.provenancechain.tools.retrieving.IMetaHashRetriever;
 import bthesis.provenancechain.tools.metadata.IPidResolver;
-import org.jline.terminal.Terminal;
-import org.jline.terminal.TerminalBuilder;
-import org.jline.reader.LineReader;
-import org.jline.reader.LineReaderBuilder;
-import org.jline.reader.EndOfFileException;
-import org.jline.reader.impl.DefaultParser;
-import org.jline.reader.impl.completer.StringsCompleter;
-
-import org.openprovenance.prov.model.Bundle;
-import org.openprovenance.prov.model.Document;
-import org.openprovenance.prov.model.QualifiedName;
-import org.openprovenance.prov.vanilla.ProvFactory;
-
-import bthesis.metageneration.MetaBuilder;
+import bthesis.provenancechain.tools.security.IntegrityVerifier;
 import bthesis.provenancechain.tools.security.HashDocument;
 
 /**
@@ -48,16 +48,12 @@ public class MainRuntime {
     private static final Terminal terminal;
     private static final HashDocument hasher;
     private static final LineReader reader;
-    private static final Initializer initializer;
     private static final IPidResolver pidResolver;
     private static final SimulationFiles simulationFiles;
     private static final Map<String, QualifiedName> connectors;
     private static final IMetaHashRetriever metaHashRetriever;
     private static final LoaderResolver resolver;
 
-    /*
-      Initializes necessary components and loads configurations.
-     */
     static {
         try {
             Configuration config = ConfigLoader.loadConfig();
@@ -73,8 +69,8 @@ public class MainRuntime {
             hasher = new HashDocument();
             meta = new MetaBuilder();
             metaHashRetriever = new SimMetaHashRetriever();
-            initializer = new Initializer(hasher, meta, simulationFiles.getFiles(),connectors);
-            pidResolver = initializer.getMemory();
+            new Initializer(hasher, meta, simulationFiles.getFiles(),connectors);
+            pidResolver = Initializer.getMemory();
             resolver = new LoaderResolver();
             crawler = new Crawler(connectors, metaHashRetriever, resolver);
             scanner = new Scanner(System.in);
@@ -175,7 +171,7 @@ public class MainRuntime {
         Document document = resolver.load(bundle);
         Bundle docBundle = (Bundle) document.getStatementOrBundle().get(0);
         Document metaDocument = resolver.load(pidResolver.getMetaDoc(docBundle.getId()));
-        String checksum = crawler.checkSum(hasher, document, metaDocument);
+        String checksum = IntegrityVerifier.checkSum(hasher, document, metaDocument, metaHashRetriever);
 
         if (checksum.contains("FAILED")) throw new RuntimeException("Checksum failed for: " + docBundle.getId() + "\n" + checksum + "\nTerminating traversal!");
 
@@ -195,7 +191,7 @@ public class MainRuntime {
         } else {
             crawler.getNodes().forEach(item ->
                     System.out.println(item.connector() + " from " +
-                            item.bundle() + "\n" + finalChecksum));
+                            item.bundle() + "\n" + finalChecksum + "\n"));
         }
         crawler.cleanup();
     }
@@ -217,7 +213,7 @@ public class MainRuntime {
         Document document = resolver.load(bundle);
         Bundle docBundle = (Bundle) document.getStatementOrBundle().get(0);
         Document metaDocument = resolver.load(pidResolver.getMetaDoc(docBundle.getId()));
-        String checksum = crawler.checkSum(hasher, document, metaDocument);
+        String checksum = IntegrityVerifier.checkSum(hasher, document, metaDocument, metaHashRetriever);
 
         if (checksum.contains("FAILED")) throw new RuntimeException("Checksum failed for: " + docBundle.getId() + "\n" + checksum + "\nTerminating traversal!");
 

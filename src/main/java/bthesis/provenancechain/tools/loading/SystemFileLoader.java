@@ -1,9 +1,9 @@
 package bthesis.provenancechain.tools.loading;
 
+import java.io.File;
+
 import org.openprovenance.prov.interop.InteropFramework;
 import org.openprovenance.prov.model.Document;
-
-import java.io.File;
 
 /**
  * Implementation of the {@link IFileLoader} interface for loading files from the local file system.

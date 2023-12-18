@@ -5,12 +5,13 @@ import java.util.HashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import bthesis.provenancechain.tools.retrieving.IMetaHashRetriever;
 import org.openprovenance.prov.model.Bundle;
 import org.openprovenance.prov.model.Entity;
 import org.openprovenance.prov.model.Document;
 import org.openprovenance.prov.model.Statement;
 import org.openprovenance.prov.model.QualifiedName;
+
+import bthesis.provenancechain.tools.retrieving.IMetaHashRetriever;
 
 /**
  * BThesis simulation file

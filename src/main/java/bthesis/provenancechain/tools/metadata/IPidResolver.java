@@ -1,9 +1,9 @@
 package bthesis.provenancechain.tools.metadata;
 
-import org.openprovenance.prov.model.QualifiedName;
-
 import java.util.List;
 import java.util.Map;
+
+import org.openprovenance.prov.model.QualifiedName;
 
 /**
  * Represents an interface for resolving PIDs (Persistent Identifiers) and working with the navigational table.
