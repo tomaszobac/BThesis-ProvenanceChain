@@ -2,6 +2,10 @@
 #### This is an implementation part of a bachelor thesis.
 #### Author of the work: Tomáš Zobač
 #### Bachelor thesis supervisor: RNDr. Rudolf Wittner
+#### The thesis was successfully defended on 12/2/2024
+#### Evaluation: A / Excellent
+#### Link: https://is.muni.cz/th/j63pc/?lang=en
+
 
 ## Set-up
 ### Clone the repo
